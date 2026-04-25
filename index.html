@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fênix Cont — Sistema Central</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--s1:#12121a;--s2:#1a1a26;--s3:#22223a;
+  --brd:#2a2a3f;--acc:#f97316;--acc2:#fb923c;
+  --green:#22c55e;--green2:#16a34a;--red:#ef4444;
+  --yellow:#eab308;--blue:#3b82f6;--purple:#a855f7;--teal:#14b8a6;
+  --txt:#f1f5f9;--muted:#64748b;--muted2:#94a3b8;--muted3:#cbd5e1;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;}
+
+header{background:var(--s1);border-bottom:1px solid var(--brd);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--acc);}
+.logo span{color:var(--txt);}
+.nav{display:flex;gap:2px;}
+.nb{padding:7px 16px;border:1px solid transparent;border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);background:transparent;transition:all .2s;letter-spacing:.4px;}
+.nb.on{background:var(--acc);color:#000;border-color:var(--acc);font-weight:500;}
+.nb:hover:not(.on){border-color:var(--brd);color:var(--txt);}
+.hdr-r{display:flex;gap:8px;align-items:center;}
+.db-status{display:flex;align-items:center;gap:5px;font-size:10px;padding:5px 10px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:6px;}
+.db-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;transition:all .2s;letter-spacing:.3px;}
+.btn-acc{background:var(--acc);color:#000;}.btn-acc:hover{background:var(--acc2);}
+.btn-out{background:transparent;color:var(--muted2);border:1px solid var(--brd);}.btn-out:hover{border-color:var(--acc);color:var(--acc);}
+.btn-green{background:var(--green);color:#000;}.btn-green:hover{background:var(--green2);}
+.btn-sm{padding:5px 12px;font-size:10px;}.btn-xs{padding:4px 9px;font-size:10px;}
+
+main{padding:24px 28px;max-width:1440px;margin:0 auto;}
+.page{display:none;}.page.on{display:block;}
+
+.card{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:18px;}
+.card-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px;}
+.kpi{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.g::before{background:var(--green)}.kpi.r::before{background:var(--red)}
+.kpi.y::before{background:var(--yellow)}.kpi.b::before{background:var(--blue)}
+.kpi.p::before{background:var(--purple)}
+.kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.kpi-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:3px;}
+.kpi-val.g{color:var(--green)}.kpi-val.r{color:var(--red)}
+.kpi-val.y{color:var(--yellow)}.kpi-val.b{color:var(--blue)}.kpi-val.p{color:var(--purple)}
+.kpi-sub{font-size:10px;color:var(--muted);}
+
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+
+.bars{display:flex;align-items:flex-end;gap:5px;height:100px;}
+.bar-w{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;}
+.bar-b{width:100%;border-radius:3px 3px 0 0;cursor:pointer;transition:opacity .2s;}.bar-b:hover{opacity:.75;}
+.bar-lbl{font-size:9px;color:var(--muted);margin-top:3px;}
+
+.tbl-wrap{background:var(--s1);border:1px solid var(--brd);border-radius:12px;overflow:hidden;}
+.tbl-hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--brd);flex-wrap:wrap;gap:8px;}
+.tbl-hdr-l{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search{background:var(--s2);border:1px solid var(--brd);border-radius:8px;padding:7px 12px;color:var(--txt);font-family:'DM Mono',monospace;font-size:11px;width:200px;outline:none;}
+.search:focus{border-color:var(--acc);}
+.search::placeholder{color:var(--muted);}
+.sel{background:var(--s2);border:1px solid var(--brd);border-radius:8px;padding:6px 10px;color:var(--muted2);font-family:'DM Mono',monospace;font-size:10px;outline:none;cursor:pointer;}
+.sel:focus{border-color:var(--acc);}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--s2);}
+th{padding:9px 14px;text-align:left;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:400;white-space:nowrap;}
+td{padding:10px 14px;font-size:11px;border-bottom:1px solid var(--brd);color:var(--muted2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--s2);}
+.cn{color:var(--txt);font-weight:500;}
+
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:9px;font-weight:500;letter-spacing:.5px;}
+.bg{background:rgba(34,197,94,.15);color:var(--green);}
+.br{background:rgba(239,68,68,.15);color:var(--red);}
+.by{background:rgba(234,179,8,.15);color:var(--yellow);}
+.bb{background:rgba(59,130,246,.15);color:var(--blue);}
+.bt{background:rgba(20,184,166,.15);color:var(--teal);}
+.bk{background:rgba(100,116,139,.15);color:var(--muted2);}
+
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:center;justify-content:center;}
+.ov.on{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--brd);border-radius:16px;padding:26px;width:540px;max-width:95vw;max-height:85vh;overflow-y:auto;}
+.modal-t{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:18px;}
+.lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;display:block;}
+.inp,.ta,.msel{width:100%;background:var(--s2);border:1px solid var(--brd);border-radius:8px;padding:9px 12px;color:var(--txt);font-family:'DM Mono',monospace;font-size:11px;outline:none;margin-bottom:12px;}
+.inp:focus,.ta:focus,.msel:focus{border-color:var(--acc);}
+.ta{resize:vertical;min-height:70px;}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
+
+.contract-card{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;border-left:3px solid var(--teal);margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;}
+.cc-name{font-family:'Syne',sans-serif;font-weight:600;font-size:14px;color:var(--txt);margin-bottom:4px;}
+.cc-info{font-size:10px;color:var(--muted);margin-bottom:10px;}
+.cc-val{font-size:18px;font-weight:700;color:var(--acc);font-family:'Syne',sans-serif;}
+
+.fc-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--brd);font-size:11px;}
+.fc-row:last-child{border-bottom:none;}
+.fc-row:hover{background:var(--s2);}
+.fc-desc{flex:1;color:var(--muted3);}
+.fc-cat{font-size:9px;color:var(--muted);width:140px;}
+.fc-val-in{color:var(--green);font-weight:500;width:100px;text-align:right;}
+.fc-val-out{color:var(--red);font-weight:500;width:100px;text-align:right;}
+.fc-data{color:var(--muted);font-size:10px;width:80px;}
+
+.msg-prev{background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:14px;font-size:11px;color:var(--muted2);line-height:1.7;white-space:pre-wrap;min-height:180px;margin-bottom:12px;}
+.inadim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.ic{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:14px;border-left:3px solid var(--red);}
+.ic-name{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:var(--txt);margin-bottom:3px;}
+.ic-info{font-size:10px;color:var(--muted);margin-bottom:10px;}
+.ic-val{font-size:17px;font-weight:700;color:var(--red);font-family:'Syne',sans-serif;margin-bottom:4px;}
+.ic-meses{font-size:10px;color:var(--yellow);margin-bottom:12px;}
+.ic-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);font-size:12px;gap:10px;}
+.spinner{width:18px;height:18px;border:2px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toast{position:fixed;bottom:22px;right:22px;background:var(--s1);border:1px solid var(--green);border-radius:10px;padding:12px 18px;font-size:11px;color:var(--green);z-index:300;transform:translateY(80px);opacity:0;transition:all .3s;}
+.toast.on{transform:translateY(0);opacity:1;}
+.toast.err{border-color:var(--red);color:var(--red);}
+
+.donut-wrap{display:flex;align-items:center;gap:16px;}
+.dleg{display:flex;flex-direction:column;gap:8px;}
+.dleg-item{display:flex;align-items:center;gap:6px;font-size:10px;}
+.dleg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px;}
+
+@media(max-width:960px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .g2,.g3{grid-template-columns:1fr;}
+  .inadim-grid{grid-template-columns:1fr;}
+  .nav{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FÊNIX <span>CONT</span></div>
+  <nav class="nav">
+    <button class="nb on" onclick="nav('dash',this)">Dashboard</button>
+    <button class="nb" onclick="nav('mensalidades',this)">Mensalidades</button>
+    <button class="nb" onclick="nav('fluxo',this)">Fluxo de Caixa</button>
+    <button class="nb" onclick="nav('contratos',this)">Contratos</button>
+    <button class="nb" onclick="nav('cobranca',this)">Cobranças</button>
+  </nav>
+  <div class="hdr-r">
+    <div class="db-status"><div class="db-dot"></div><span style="color:var(--green)">Supabase conectado</span></div>
+    <button class="btn btn-out btn-sm" onclick="openM('mCliente')">+ Cliente</button>
+    <button class="btn btn-acc btn-sm" onclick="openM('mMens')">+ Mensalidade</button>
+  </div>
+</header>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="page-dash" class="page on">
+  <div style="margin-bottom:20px;">
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">Dashboard <span style="color:var(--acc)" id="dash-mes"></span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px;">Fênix Serviços Contábeis · Dados em tempo real</div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi g"><div class="kpi-lbl">Recebido no mês</div><div class="kpi-val g" id="kRec">—</div><div class="kpi-sub" id="kRecSub">—</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Inadimplência</div><div class="kpi-val r" id="kInad">—</div><div class="kpi-sub" id="kInadSub">—</div></div>
+    <div class="kpi y"><div class="kpi-lbl">A vencer 7 dias</div><div class="kpi-val y" id="kAv">—</div><div class="kpi-sub" id="kAvSub">—</div></div>
+    <div class="kpi b"><div class="kpi-lbl">Carteira mensal</div><div class="kpi-val b" id="kCart">—</div><div class="kpi-sub" id="kCartSub">—</div></div>
+    <div class="kpi p"><div class="kpi-lbl">Contratos ativos</div><div class="kpi-val p" id="kCont">—</div><div class="kpi-sub" id="kContSub">—</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="card-title">Recebimentos 2026</div><div class="bars" id="barChart"><div class="loading"><div class="spinner"></div></div></div></div>
+    <div class="card"><div class="card-title">Status mensalidades</div><div class="donut-wrap"><svg width="90" height="90" viewBox="0 0 90 90" id="donutSvg"><circle cx="45" cy="45" r="34" fill="none" stroke="#1a1a26" stroke-width="16"/></svg><div class="dleg" id="donutLeg"></div></div></div>
+  </div>
+  <div class="g3">
+    <div class="card">
+      <div class="card-title">Fluxo — mês atual</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <div><div style="font-size:9px;color:var(--muted)">ENTRADAS</div><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--green)" id="fcEnt">—</div></div>
+        <div style="text-align:right"><div style="font-size:9px;color:var(--muted)">SAÍDAS</div><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--red)" id="fcSai">—</div></div>
+      </div>
+      <div style="background:var(--s2);border-radius:4px;height:4px;"><div id="fcBar" style="height:100%;background:var(--green);border-radius:4px;width:0%;transition:width .5s;"></div></div>
+      <div style="font-size:9px;color:var(--muted);margin-top:6px;" id="fcSaldo"></div>
+    </div>
+    <div class="card"><div class="card-title">Contratos p/ renovar</div><div id="dashContr"><div class="loading"><div class="spinner"></div></div></div></div>
+    <div class="card"><div class="card-title">Últimos recebimentos</div><div id="dashRec"><div class="loading"><div class="spinner"></div></div></div></div>
+  </div>
+  <div style="margin-bottom:14px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;">Movimentações recentes</div>
+  <div class="tbl-wrap"><table><thead><tr><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="dashTable"><tr><td colspan="5"><div class="loading"><div class="spinner"></div>Carregando...</div></td></tr></tbody></table></div>
+</div>
+
+<!-- MENSALIDADES -->
+<div id="page-mensalidades" class="page">
+  <div style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Controle de <span style="color:var(--acc)">Mensalidades</span></div>
+  </div>
+  <div class="tbl-wrap">
+    <div class="tbl-hdr">
+      <div class="tbl-hdr-l">
+        <input class="search" placeholder="🔍  Buscar..." oninput="filtrarMens()" id="srcMens">
+        <select class="sel" id="fStatus" onchange="filtrarMens()">
+          <option value="">Todos</option><option value="PAGO">Pagos</option>
+          <option value="VENCIDO">Vencidos</option><option value="PENDENTE">Pendentes</option>
+        </select>
+        <select class="sel" id="fMes" onchange="filtrarMens()">
+          <option value="">Todos os meses</option>
+          <option value="1">Jan</option><option value="2">Fev</option><option value="3">Mar</option>
+          <option value="4">Abr</option><option value="5">Mai</option><option value="6">Jun</option>
+          <option value="7">Jul</option><option value="8">Ago</option><option value="9">Set</option>
+          <option value="10">Out</option><option value="11">Nov</option><option value="12">Dez</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-out btn-sm" onclick="exportCSV()">↓ CSV</button>
+      </div>
+    </div>
+    <table><thead><tr><th>#</th><th>Cliente</th><th>Valor</th><th>Mês/Ano</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody id="mensTable"><tr><td colspan="7"><div class="loading"><div class="spinner"></div>Carregando...</div></td></tr></tbody></table>
+  </div>
+</div>
+
+<!-- FLUXO -->
+<div id="page-fluxo" class="page">
+  <div style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Fluxo de <span style="color:var(--acc)">Caixa</span></div>
+    <button class="btn btn-acc btn-sm" onclick="openM('mFluxo')">+ Lançamento</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;" id="fcKpis"></div>
+  <div class="g2">
+    <div class="tbl-wrap"><div class="tbl-hdr"><div class="card-title" style="margin:0">Lançamentos</div></div><div id="fcLancs"><div class="loading"><div class="spinner"></div></div></div></div>
+    <div class="card"><div class="card-title">DRE resumido</div><div id="dreResumo"></div></div>
+  </div>
+</div>
+
+<!-- CONTRATOS -->
+<div id="page-contratos" class="page">
+  <div style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Gestão de <span style="color:var(--teal)">Contratos</span></div>
+    <button class="btn btn-acc btn-sm" onclick="openM('mContrato')">+ Contrato</button>
+  </div>
+  <div class="tbl-wrap" style="margin-bottom:18px;">
+    <div class="tbl-hdr">
+      <input class="search" placeholder="🔍  Buscar..." oninput="filtrarContratos()" id="srcContr">
+    </div>
+    <div id="contratosList"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- COBRANÇA -->
+<div id="page-cobranca" class="page">
+  <div style="margin-bottom:18px;"><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">Gerador de <span style="color:var(--acc)">Cobranças</span></div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px;">
+    <div class="card">
+      <div class="card-title">Configurar mensagem</div>
+      <label class="lbl">Cliente</label>
+      <select class="msel" id="cobCli" onchange="gerarMsg()"><option value="">— Selecione —</option></select>
+      <label class="lbl">Tipo</label>
+      <select class="msel" id="cobTipo" onchange="gerarMsg()">
+        <option value="lembrete">Lembrete amigável</option>
+        <option value="vencido">Cobrança em atraso</option>
+        <option value="urgente">Urgente — múltiplos meses</option>
+        <option value="renovacao">Proposta de renovação</option>
+        <option value="negociacao">Proposta de negociação</option>
+      </select>
+      <label class="lbl">Canal</label>
+      <select class="msel" id="cobCanal">
+        <option value="whatsapp">WhatsApp</option><option value="email">E-mail</option>
+      </select>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;">
+        <button class="btn btn-acc btn-sm" onclick="gerarMsg()">↻ Gerar</button>
+        <button class="btn btn-out btn-sm" onclick="copiarMsg()">📋 Copiar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Prévia da mensagem</div>
+      <div class="msg-prev" id="msgPrev">Selecione um cliente para gerar a mensagem.</div>
+    </div>
+  </div>
+  <div style="margin-bottom:12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:2px;">Clientes em atraso</div>
+  <div class="inadim-grid" id="inadimCards"><div class="loading"><div class="spinner"></div></div></div>
+</div>
+
+</main>
+
+<!-- MODAIS -->
+<div class="ov" id="ov-mCliente">
+  <div class="modal">
+    <div class="modal-t">Novo Cliente</div>
+    <div class="mrow"><div><label class="lbl">Código</label><input class="inp" id="nc-cod" placeholder="0310"></div><div><label class="lbl">Nome</label><input class="inp" id="nc-nome" placeholder="ACME LTDA"></div></div>
+    <div class="mrow"><div><label class="lbl">CNPJ</label><input class="inp" id="nc-cnpj" placeholder="00.000.000/0001-00"></div><div><label class="lbl">WhatsApp</label><input class="inp" id="nc-tel" placeholder="(11) 99999-9999"></div></div>
+    <div class="mrow"><div><label class="lbl">E-mail</label><input class="inp" id="nc-email" placeholder="cliente@email.com"></div><div><label class="lbl">Tributação</label><select class="msel" id="nc-trib" style="margin:0"><option>Simples Nacional</option><option>Lucro Presumido</option><option>Lucro Real</option><option>MEI</option></select></div></div>
+    <div class="mrow"><div><label class="lbl">Mensalidade (R$)</label><input class="inp" id="nc-valor" type="number" placeholder="450"></div><div><label class="lbl">Vencimento (dia)</label><input class="inp" id="nc-venc" type="number" placeholder="20"></div></div>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeM('mCliente')">Cancelar</button><button class="btn btn-acc" onclick="salvarCliente()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="ov" id="ov-mMens">
+  <div class="modal">
+    <div class="modal-t">Registrar Mensalidade</div>
+    <label class="lbl">Cliente</label><select class="msel" id="nm-cli"></select>
+    <div class="mrow"><div><label class="lbl">Mês</label><select class="msel" id="nm-mes" style="margin:0"><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4" selected>Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div><div><label class="lbl">Ano</label><input class="inp" id="nm-ano" type="number" value="2026" style="margin:0"></div></div>
+    <div class="mrow" style="margin-top:12px;"><div><label class="lbl">Valor (R$)</label><input class="inp" id="nm-valor" type="number" placeholder="450"></div><div><label class="lbl">Vencimento</label><input class="inp" id="nm-venc" type="date"></div></div>
+    <label class="lbl">Status</label><select class="msel" id="nm-status"><option value="PENDENTE">Pendente</option><option value="PAGO">Pago</option><option value="VENCIDO">Vencido</option><option value="BONIFICADO">Bonificado</option></select>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeM('mMens')">Cancelar</button><button class="btn btn-acc" onclick="salvarMens()">Registrar</button></div>
+  </div>
+</div>
+
+<div class="ov" id="ov-mBaixa">
+  <div class="modal">
+    <div class="modal-t">Dar Baixa — <span id="baixaNome" style="color:var(--acc)"></span></div>
+    <input type="hidden" id="baixaId">
+    <label class="lbl">Data do pagamento</label><input class="inp" type="date" id="baixaData">
+    <label class="lbl">Formato recebido</label>
+    <select class="msel" id="baixaFmt"><option>Boleto Neofin</option><option>Pix</option><option>Cartão</option><option>Transferência</option></select>
+    <label class="lbl">Observação</label><textarea class="ta" id="baixaObs" placeholder="Ex: parcial, negociado..."></textarea>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeM('mBaixa')">Cancelar</button><button class="btn btn-green" onclick="confirmarBaixa()">✓ Confirmar Pagamento</button></div>
+  </div>
+</div>
+
+<div class="ov" id="ov-mFluxo">
+  <div class="modal">
+    <div class="modal-t">Novo Lançamento</div>
+    <div class="mrow"><div><label class="lbl">Data</label><input class="inp" id="fl-data" type="date"></div><div><label class="lbl">Tipo</label><select class="msel" id="fl-tipo" style="margin:0"><option value="E">Entrada</option><option value="S">Saída</option></select></div></div>
+    <label class="lbl">Descrição</label><input class="inp" id="fl-desc" placeholder="Ex: Mensalidade ACME LTDA">
+    <div class="mrow"><div><label class="lbl">Valor (R$)</label><input class="inp" id="fl-valor" type="number" placeholder="450"></div><div><label class="lbl">Grupo DRE</label><select class="msel" id="fl-grupo" style="margin:0"><option>RECEITAS</option><option>DESPESAS C/ PESSOAL</option><option>DESPESAS C/ ADMINISTRATIVO</option><option>DESPESAS C/ SUPORTE</option><option>DESPESAS C/ TERCEIROS</option><option>IMPOSTOS S/ RECEITA</option><option>INVESTIMENTOS</option></select></div></div>
+    <label class="lbl">Empresa / Fornecedor</label><input class="inp" id="fl-empresa" placeholder="Ex: Shalом Coworking">
+    <div class="mfoot"><button class="btn btn-out" onclick="closeM('mFluxo')">Cancelar</button><button class="btn btn-acc" onclick="salvarFluxo()">Registrar</button></div>
+  </div>
+</div>
+
+<div class="ov" id="ov-mContrato">
+  <div class="modal">
+    <div class="modal-t">Novo Contrato</div>
+    <div class="mrow"><div><label class="lbl">Cliente</label><select class="msel" id="ct-cli" style="margin:0"></select></div><div><label class="lbl">Valor (R$)</label><input class="inp" id="ct-valor" type="number" placeholder="450" style="margin:0"></div></div>
+    <div class="mrow" style="margin-top:12px;"><div><label class="lbl">Início</label><input class="inp" id="ct-inicio" type="date"></div><div><label class="lbl">Próx. renovação</label><input class="inp" id="ct-renov" type="date"></div></div>
+    <label class="lbl">Tributação</label><select class="msel" id="ct-trib"><option>Simples Nacional</option><option>Lucro Presumido</option><option>Lucro Real</option><option>MEI</option></select>
+    <label class="lbl">Observações</label><textarea class="ta" id="ct-obs" placeholder="Ex: inclui DP..."></textarea>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeM('mContrato')">Cancelar</button><button class="btn btn-acc" onclick="salvarContrato()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════ CONFIG SUPABASE ═══════════
+const SB_URL = 'https://uebkiofwviphfozhrjno.supabase.co';
+const SB_KEY = 'sb_publishable_kEzEro8_9_TQy3rwOCMFhQ_8TEpqs9f';
+const HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+const MESES = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MESES_F = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// ═══════════ API ═══════════
+async function sb(table, opts={}){
+  const {method='GET', body, query='', select='*'} = opts;
+  let url = `${SB_URL}/rest/v1/${table}?select=${select}${query}`;
+  const res = await fetch(url, {
+    method, headers: {...HEADERS, 'Prefer': method==='POST'?'return=representation':''},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!res.ok){ const e = await res.text(); throw new Error(e); }
+  if(method==='DELETE'||res.status===204) return [];
+  return res.json();
+}
+async function sbInsert(table, body){ return sb(table,{method:'POST',body}); }
+async function sbUpdate(table, id, body){ return sb(table,{method:'PATCH',body,query:`&id=eq.${id}`}); }
+
+// ═══════════ CACHE ═══════════
+let clientes=[], mensalidades=[], fluxo=[], contratos=[];
+let editBaixaId=null;
+
+async function loadAll(){
+  try{
+    [clientes, mensalidades, fluxo, contratos] = await Promise.all([
+      sb('clientes','*','order=nome'),
+      sb('mensalidades',{select:'*',query:'&order=ano.desc,mes.desc'}),
+      sb('fluxo',{select:'*',query:'&order=data.desc'}),
+      sb('contratos',{select:'*',query:'&order=renovacao.asc'})
+    ]);
+  } catch(e){ toast('Erro ao carregar dados: '+e.message, true); }
+}
+
+async function sb(table, opts={}){
+  const {method='GET', body, query='', select='*'} = typeof opts === 'string'
+    ? {select: opts} : opts;
+  let url = `${SB_URL}/rest/v1/${table}?select=${select}${query}`;
+  const res = await fetch(url, {
+    method,
+    headers: {...HEADERS, ...(method==='POST'?{'Prefer':'return=representation'}:{})},
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!res.ok){ const e = await res.text(); throw new Error(e); }
+  if(method==='DELETE'||res.status===204) return [];
+  return res.json();
+}
+
+// ═══════════ UTILS ═══════════
+function R(v){return'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2});}
+function GC(id){return clientes.find(c=>c.id===id)||{};}
+function sbadge(s){const m={PAGO:'bg',VENCIDO:'br',PENDENTE:'by',BONIFICADO:'bb'};return`<span class="badge ${m[s]||'bk'}">${s}</span>`;}
+
+// ═══════════ NAV ═══════════
+function nav(page,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('page-'+page).classList.add('on');
+  btn.classList.add('on');
+  if(page==='dash') renderDash();
+  if(page==='mensalidades') renderMens();
+  if(page==='fluxo') renderFluxo();
+  if(page==='contratos') renderContratos();
+  if(page==='cobranca') renderCobranca();
+}
+
+// ═══════════ DASHBOARD ═══════════
+function renderDash(){
+  const hoje=new Date(), mes=hoje.getMonth()+1, ano=hoje.getFullYear();
+  document.getElementById('dash-mes').textContent=MESES_F[mes]+' '+ano;
+  const mm=mensalidades.filter(m=>m.mes===mes&&m.ano===ano);
+  const pagos=mm.filter(m=>m.status==='PAGO');
+  const vencidos=mensalidades.filter(m=>m.status==='VENCIDO');
+  const rec=pagos.reduce((a,m)=>a+(m.valor||0),0);
+  const inadim=vencidos.reduce((a,m)=>a+(m.valor||0),0);
+  const em7=new Date(); em7.setDate(em7.getDate()+7);
+  const av=mensalidades.filter(m=>{if(m.status!=='PENDENTE')return false;const d=new Date(m.vencimento);return d>=hoje&&d<=em7;});
+  const totalMes=mm.reduce((a,m)=>a+(m.valor||0),0);
+  const cAtivos=contratos.filter(c=>c.status==='ATIVO').length;
+  const cRenov=contratos.filter(c=>c.status==='RENOVAR').length;
+
+  document.getElementById('kRec').textContent=R(rec);
+  document.getElementById('kRecSub').textContent=`${pagos.length} clientes pagos`;
+  document.getElementById('kInad').textContent=R(inadim);
+  document.getElementById('kInadSub').textContent=`${[...new Set(vencidos.map(m=>m.cliente_id))].length} em atraso`;
+  document.getElementById('kAv').textContent=R(av.reduce((a,m)=>a+(m.valor||0),0));
+  document.getElementById('kAvSub').textContent=`${av.length} cobranças`;
+  document.getElementById('kCart').textContent=R(totalMes);
+  document.getElementById('kCartSub').textContent=`${clientes.length} clientes ativos`;
+  document.getElementById('kCont').textContent=cAtivos;
+  document.getElementById('kContSub').textContent=`${cRenov} p/ renovar`;
+
+  // Bar chart
+  const vals=[1,2,3,4,5,6].map(m=>mensalidades.filter(ms=>ms.mes===m&&ms.ano===2026&&ms.status==='PAGO').reduce((a,ms)=>a+(ms.valor||0),0));
+  const max=Math.max(...vals,1);
+  document.getElementById('barChart').innerHTML=vals.map((v,i)=>`<div class="bar-w"><div class="bar-b" style="height:${Math.round(v/max*100)}%;background:${v>0?'var(--acc)':'var(--brd)'}" title="${MESES[i+1]}: ${R(v)}"></div><div class="bar-lbl">${MESES[i+1]}</div></div>`).join('');
+
+  // Donut
+  const counts={PAGO:0,VENCIDO:0,PENDENTE:0};
+  mm.forEach(m=>{if(counts[m.status]!==undefined)counts[m.status]++;});
+  const tot=Object.values(counts).reduce((a,b)=>a+b,0)||1;
+  const colors={PAGO:'var(--green)',VENCIDO:'var(--red)',PENDENTE:'var(--yellow)'};
+  const svg=document.getElementById('donutSvg');
+  const r=34,c=45,ci=2*Math.PI*r; let off=0,segs='';
+  Object.entries(counts).forEach(([s,ct])=>{if(!ct)return;const p=ct/tot,d=p*ci;segs+=`<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${colors[s]}" stroke-width="16" stroke-dasharray="${d} ${ci}" stroke-dashoffset="${-off}" transform="rotate(-90 ${c} ${c})"/>`;off+=d;});
+  svg.innerHTML=`<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#1a1a26" stroke-width="16"/>${segs}`;
+  document.getElementById('donutLeg').innerHTML=Object.entries(counts).filter(([,v])=>v>0).map(([s,v])=>`<div class="dleg-item"><div class="dleg-dot" style="background:${colors[s]}"></div><span style="color:var(--muted2)">${s}</span><span style="color:var(--txt);margin-left:auto">${v}</span></div>`).join('');
+
+  // Fluxo
+  const ent=fluxo.filter(f=>f.tipo==='E').reduce((a,f)=>a+(f.valor||0),0);
+  const sai=fluxo.filter(f=>f.tipo==='S').reduce((a,f)=>a+(f.valor||0),0);
+  document.getElementById('fcEnt').textContent=R(ent);
+  document.getElementById('fcSai').textContent=R(sai);
+  document.getElementById('fcBar').style.width=(ent>0?Math.min(100,Math.round(ent/(ent+sai)*100)):0)+'%';
+  document.getElementById('fcSaldo').textContent=`Saldo: ${R(ent-sai)}`;
+
+  // Contratos renovar
+  const cRen=contratos.filter(c=>c.status==='RENOVAR').slice(0,3);
+  document.getElementById('dashContr').innerHTML=cRen.map(c=>{const cl=GC(c.cliente_id);return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--brd);"><div><div style="font-size:11px;color:var(--txt)">${cl.nome||'—'}</div><div style="font-size:9px;color:var(--muted)">${R(c.valor)}/mês</div></div><span class="badge by">RENOVAR</span></div>`;}).join('')||'<div style="font-size:11px;color:var(--muted);padding:8px 0">Nenhum p/ renovar</div>';
+
+  // Recentes
+  document.getElementById('dashRec').innerHTML=pagos.slice(0,4).map(m=>{const c=GC(m.cliente_id);return`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--brd);"><div><div style="font-size:11px;color:var(--txt)">${c.nome||'—'}</div><div style="font-size:9px;color:var(--muted)">${MESES[m.mes]}/${m.ano}</div></div><div style="color:var(--green);font-size:11px;font-weight:500">${R(m.valor)}</div></div>`;}).join('')||'<div style="font-size:11px;color:var(--muted);padding:8px 0">Sem recebimentos</div>';
+
+  // Tabela
+  const recent=[...mensalidades].sort((a,b)=>{const o={VENCIDO:0,PENDENTE:1,PAGO:2};return(o[a.status]||3)-(o[b.status]||3);}).slice(0,8);
+  document.getElementById('dashTable').innerHTML=recent.map(m=>{const c=GC(m.cliente_id);return`<tr><td class="cn">${c.nome||'—'}</td><td>${R(m.valor)}</td><td>${m.vencimento?m.vencimento.split('-').reverse().join('/'):'—'}</td><td>${sbadge(m.status)}</td><td><div style="display:flex;gap:5px">${m.status!=='PAGO'?`<button class="btn btn-green btn-xs" onclick="abrirBaixa(${m.id},'${c.nome||''}')">✓</button>`:''}<button class="btn btn-out btn-xs" onclick="irCobrar(${m.cliente_id})">💬</button></div></td></tr>`;}).join('');
+}
+
+// ═══════════ MENSALIDADES ═══════════
+function renderMens(){filtrarMens();}
+function filtrarMens(){
+  const src=(document.getElementById('srcMens')?.value||'').toLowerCase();
+  const fs=document.getElementById('fStatus')?.value||'';
+  const fm=document.getElementById('fMes')?.value||'';
+  let fil=mensalidades.filter(m=>{
+    const c=GC(m.cliente_id);
+    return(!src||((c.nome||'').toLowerCase().includes(src)))&&(!fs||m.status===fs)&&(!fm||String(m.mes)===fm);
+  });
+  const tb=document.getElementById('mensTable');
+  if(!fil.length){tb.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Nenhum resultado</td></tr>`;return;}
+  tb.innerHTML=fil.map(m=>{const c=GC(m.cliente_id);return`<tr><td style="color:var(--muted)">${c.cod||'—'}</td><td class="cn">${c.nome||'—'}</td><td>${R(m.valor)}</td><td>${MESES[m.mes]}/${m.ano}</td><td>${m.vencimento?m.vencimento.split('-').reverse().join('/'):'—'}</td><td>${sbadge(m.status)}</td><td><div style="display:flex;gap:5px">${m.status!=='PAGO'?`<button class="btn btn-green btn-xs" onclick="abrirBaixa(${m.id},'${c.nome||''}')">✓ Baixa</button>`:''}<button class="btn btn-out btn-xs" onclick="irCobrar(${m.cliente_id})">💬</button></div></td></tr>`;}).join('');
+}
+
+// ═══════════ FLUXO ═══════════
+function renderFluxo(){
+  const ent=fluxo.filter(f=>f.tipo==='E').reduce((a,f)=>a+(f.valor||0),0);
+  const sai=fluxo.filter(f=>f.tipo==='S').reduce((a,f)=>a+(f.valor||0),0);
+  const sal=ent-sai;
+  document.getElementById('fcKpis').innerHTML=`
+    <div class="kpi g"><div class="kpi-lbl">Entradas</div><div class="kpi-val g">${R(ent)}</div><div class="kpi-sub">${fluxo.filter(f=>f.tipo==='E').length} lançamentos</div></div>
+    <div class="kpi r"><div class="kpi-lbl">Saídas</div><div class="kpi-val r">${R(sai)}</div><div class="kpi-sub">${fluxo.filter(f=>f.tipo==='S').length} lançamentos</div></div>
+    <div class="kpi ${sal>=0?'g':'r'}"><div class="kpi-lbl">Saldo</div><div class="kpi-val ${sal>=0?'g':'r'}">${R(sal)}</div><div class="kpi-sub">${sal>=0?'positivo':'negativo'}</div></div>
+    <div class="kpi b"><div class="kpi-lbl">Margem</div><div class="kpi-val b">${ent>0?((sal/ent)*100).toFixed(1):'0'}%</div><div class="kpi-sub">receita líquida</div></div>`;
+  document.getElementById('fcLancs').innerHTML=fluxo.map(f=>`<div class="fc-row"><div class="fc-data">${f.data?f.data.split('-').reverse().join('/'):'—'}</div><div class="fc-desc">${f.descricao||'—'}</div><div class="fc-cat">${f.grupo||'—'}</div>${f.tipo==='E'?`<div class="fc-val-in">+${R(f.valor)}</div><div class="fc-val-out">—</div>`:`<div class="fc-val-in">—</div><div class="fc-val-out">-${R(f.valor)}</div>`}</div>`).join('')||'<div class="loading">Nenhum lançamento</div>';
+  const grupos={};
+  fluxo.forEach(f=>{if(!grupos[f.grupo])grupos[f.grupo]={e:0,s:0};f.tipo==='E'?grupos[f.grupo].e+=f.valor||0:grupos[f.grupo].s+=f.valor||0;});
+  document.getElementById('dreResumo').innerHTML=Object.entries(grupos).map(([g,v])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--brd);font-size:10px;"><span style="color:var(--muted2)">${g}</span><span style="color:${v.e>0?'var(--green)':'var(--red)'};">${v.e>0?'+'+R(v.e):'-'+R(v.s)}</span></div>`).join('');
+}
+
+// ═══════════ CONTRATOS ═══════════
+function renderContratos(){filtrarContratos();}
+function filtrarContratos(){
+  const src=(document.getElementById('srcContr')?.value||'').toLowerCase();
+  const fil=contratos.filter(c=>{const cl=GC(c.cliente_id);return!src||(cl.nome||'').toLowerCase().includes(src);});
+  document.getElementById('contratosList').innerHTML=fil.map(c=>{
+    const cl=GC(c.cliente_id);
+    const dias=c.renovacao?Math.ceil((new Date(c.renovacao)-new Date())/86400000):999;
+    return`<div class="contract-card"><div><div class="cc-name">${cl.nome||'—'}</div><div class="cc-info">${cl.cnpj||'—'} · ${c.tributacao||'—'} · Início: ${c.inicio?c.inicio.split('-').reverse().join('/'):'—'}</div>${c.obs?`<div style="font-size:10px;color:var(--muted)">${c.obs}</div>`:''}<div style="display:flex;gap:6px;margin-top:10px;"><button class="btn btn-out btn-xs" onclick="irCobrar(${c.cliente_id})">💬 Cobrar renovação</button></div></div><div style="text-align:right"><div class="cc-val">${R(c.valor)}<span style="font-size:11px;color:var(--muted)">/mês</span></div>${sbadge(c.status)}<div style="font-size:10px;color:${dias<0?'var(--red)':dias<60?'var(--yellow)':'var(--muted2)'};margin-top:8px;">${dias<0?`Vencido há ${Math.abs(dias)}d`:dias===0?'Vence hoje':`Renova em ${dias}d`}</div></div></div>`;
+  }).join('')||'<div class="loading">Nenhum contrato</div>';
+}
+
+// ═══════════ COBRANÇA ═══════════
+function renderCobranca(){
+  const sel=document.getElementById('cobCli');
+  sel.innerHTML='<option value="">— Selecione —</option>'+clientes.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');
+  renderInadim();
+}
+function renderInadim(){
+  const venc=mensalidades.filter(m=>m.status==='VENCIDO');
+  const por={};venc.forEach(m=>{if(!por[m.cliente_id])por[m.cliente_id]=[];por[m.cliente_id].push(m);});
+  document.getElementById('inadimCards').innerHTML=Object.entries(por).map(([cid,ms])=>{
+    const c=GC(Number(cid));
+    const tot=ms.reduce((a,m)=>a+(m.valor||0),0);
+    const mStr=ms.map(m=>`${MESES[m.mes]}/${m.ano}`).join(', ');
+    return`<div class="ic"><div class="ic-name">${c.nome||'—'}</div><div class="ic-info">${c.cnpj||'—'}</div><div class="ic-val">${R(tot)}</div><div class="ic-meses">⚠ ${ms.length} mês(es): ${mStr}</div><div class="ic-actions"><button class="btn btn-out btn-xs" onclick="irCobrar(${c.id})">💬 Cobrar</button><button class="btn btn-green btn-xs" onclick="abrirBaixa(${ms[0].id},'${c.nome||''}')">✓ Baixa</button></div></div>`;
+  }).join('')||'<div style="font-size:12px;color:var(--muted);padding:20px;text-align:center;grid-column:1/-1">🎉 Nenhum cliente inadimplente!</div>';
+}
+function gerarMsg(){
+  const cid=Number(document.getElementById('cobCli').value);
+  const tipo=document.getElementById('cobTipo').value;
+  const canal=document.getElementById('cobCanal').value;
+  const prev=document.getElementById('msgPrev');
+  if(!cid){prev.textContent='Selecione um cliente para gerar a mensagem.';return;}
+  const c=GC(cid);
+  const venc=mensalidades.filter(m=>m.cliente_id===cid&&m.status==='VENCIDO');
+  const tot=venc.reduce((a,m)=>a+(m.valor||0),0);
+  const mStr=venc.map(m=>`${MESES_F[m.mes]}/${m.ano}`).join(', ');
+  const prox=mensalidades.find(m=>m.cliente_id===cid&&m.status==='PENDENTE');
+  let msg='';
+  if(tipo==='lembrete'){
+    const vp=prox?R(prox.valor):R(c.valor);const dp=prox?prox.vencimento.split('-').reverse().join('/'):('dia '+(c.venc_dia||20));
+    msg=canal==='whatsapp'?`Olá, ${c.nome}! 😊\n\nPassando para lembrar que a mensalidade de contabilidade vence em breve.\n\n📅 Vencimento: *${dp}*\n💰 Valor: *${vp}*\n\nQualquer dúvida, estou à disposição!\n\n_Fênix Serviços Contábeis_`:`Assunto: Lembrete de vencimento\n\nPrezado(a) ${c.nome},\n\nLembramos que a mensalidade vencerá em ${dp}, no valor de ${vp}.\n\nAtenciosamente,\nFênix Serviços Contábeis`;
+  }else if(tipo==='vencido'){
+    if(!venc.length){prev.textContent='Sem mensalidades vencidas.';return;}
+    msg=canal==='whatsapp'?`Olá, ${c.nome}!\n\nIdentificamos mensalidade(s) em aberto:\n\n📋 Ref.: *${mStr}*\n💰 Total: *${R(tot)}*\n\nPor favor, regularize para evitar interrupção nos serviços.\n\n_Fênix Serviços Contábeis_`:`Assunto: Mensalidade em aberto\n\nPrezado(a) ${c.nome},\n\nAs mensalidades de ${mStr} estão em aberto, totalizando ${R(tot)}.\n\nSolicitamos regularização em 5 dias úteis.\n\nFênix Serviços Contábeis`;
+  }else if(tipo==='urgente'){
+    msg=canal==='whatsapp'?`Olá, ${c.nome}.\n\n⚠️ *AVISO IMPORTANTE*\n\n*${venc.length} mensalidade(s) em atraso* — Total: *${R(tot)}*\nRef.: ${mStr}\n\nPara evitar suspensão dos serviços, regularize urgente.\n\n📲 (11) 97464-5012 — Marcos\n\n_Fênix Cont_`:`Assunto: URGENTE — Pendência — ${c.nome}\n\nPrezado(a) ${c.nome},\n\n${venc.length} mensalidade(s) em atraso (${mStr}), total ${R(tot)}.\n\nSem regularização em 3 dias, serviços serão suspensos.\n\nFênix Serviços Contábeis`;
+  }else if(tipo==='renovacao'){
+    const novoVal=R((c.valor||0)*1.1);
+    msg=canal==='whatsapp'?`Olá, ${c.nome}! Tudo bem?\n\nConforme nossa política anual, formalizamos a renovação dos serviços para 2026.\n\n💰 Proposta: *${novoVal}/mês* a partir de Março/2026\n\nPodemos prosseguir? Me dá um *OK*! 😊\n\n_Marcos — Fênix Serviços Contábeis_`:`Assunto: Renovação 2026 — Fênix Cont\n\nPrezado(a) ${c.nome},\n\nFormalizamos a renovação para 2026 no valor de ${novoVal}/mês.\n\nAguardamos confirmação.\n\nMarcos Lopes — Fênix Serviços Contábeis`;
+  }else{
+    msg=canal==='whatsapp'?`Olá, ${c.nome}! 💙\n\nSaldo em aberto: *${R(tot||c.valor||0)}*\n\nPodemos negociar:\n✅ Parcelamento\n✅ Prazo estendido\n\n📲 (11) 97464-5012 — Marcos\n\n_Fênix Cont_`:`Assunto: Proposta de regularização\n\nPrezado(a) ${c.nome},\n\nGostaríamos de negociar a regularização do saldo de ${R(tot||c.valor||0)}.\n\nFênix Serviços Contábeis`;
+  }
+  prev.textContent=msg;
+}
+function copiarMsg(){
+  const msg=document.getElementById('msgPrev').textContent;
+  if(!msg||msg.startsWith('Selecione'))return;
+  navigator.clipboard.writeText(msg).then(()=>toast('📋 Mensagem copiada!'));
+}
+function irCobrar(cid){
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('page-cobranca').classList.add('on');
+  document.querySelectorAll('.nb')[4].classList.add('on');
+  renderCobranca();
+  setTimeout(()=>{document.getElementById('cobCli').value=cid;gerarMsg();},100);
+}
+
+// ═══════════ BAIXA ═══════════
+function abrirBaixa(mid,nome){
+  editBaixaId=mid;
+  document.getElementById('baixaNome').textContent=nome;
+  document.getElementById('baixaData').value=new Date().toISOString().split('T')[0];
+  openM('mBaixa');
+}
+async function confirmarBaixa(){
+  try{
+    await sbUpdate('mensalidades', editBaixaId, {
+      status:'PAGO',
+      data_baixa: document.getElementById('baixaData').value,
+      formato: document.getElementById('baixaFmt').value,
+      obs: document.getElementById('baixaObs').value
+    });
+    const idx=mensalidades.findIndex(m=>m.id===editBaixaId);
+    if(idx>=0){mensalidades[idx].status='PAGO';mensalidades[idx].data_baixa=document.getElementById('baixaData').value;}
+    closeM('mBaixa');toast('✓ Pagamento registrado no Supabase!');
+    const act=document.querySelector('.page.on').id.replace('page-','');
+    if(act==='dash')renderDash();if(act==='mensalidades')renderMens();if(act==='cobranca')renderCobranca();
+  }catch(e){toast('Erro: '+e.message,true);}
+}
+
+// ═══════════ CRUD ═══════════
+async function salvarCliente(){
+  const nome=document.getElementById('nc-nome').value.trim();if(!nome){alert('Informe o nome');return;}
+  try{
+    const [novo]=await sbInsert('clientes',{
+      cod:document.getElementById('nc-cod').value,nome:nome.toUpperCase(),
+      cnpj:document.getElementById('nc-cnpj').value,tel:document.getElementById('nc-tel').value,
+      email:document.getElementById('nc-email').value,trib:document.getElementById('nc-trib').value,
+      valor:Number(document.getElementById('nc-valor').value)||0,
+      venc_dia:Number(document.getElementById('nc-venc').value)||20
+    });
+    clientes.push(novo);closeM('mCliente');toast('✓ Cliente salvo no Supabase!');
+  }catch(e){toast('Erro: '+e.message,true);}
+}
+async function salvarMens(){
+  const cid=Number(document.getElementById('nm-cli').value);if(!cid){alert('Selecione cliente');return;}
+  try{
+    const [novo]=await sbInsert('mensalidades',{
+      cliente_id:cid,mes:Number(document.getElementById('nm-mes').value),
+      ano:Number(document.getElementById('nm-ano').value),
+      valor:Number(document.getElementById('nm-valor').value)||0,
+      vencimento:document.getElementById('nm-venc').value,
+      status:document.getElementById('nm-status').value,formato:'Boleto Neofin'
+    });
+    mensalidades.unshift(novo);closeM('mMens');toast('✓ Mensalidade registrada!');
+    if(document.getElementById('page-mensalidades').classList.contains('on'))renderMens();
+  }catch(e){toast('Erro: '+e.message,true);}
+}
+async function salvarFluxo(){
+  try{
+    const [novo]=await sbInsert('fluxo',{
+      data:document.getElementById('fl-data').value,tipo:document.getElementById('fl-tipo').value,
+      descricao:document.getElementById('fl-desc').value,valor:Number(document.getElementById('fl-valor').value)||0,
+      grupo:document.getElementById('fl-grupo').value,empresa:document.getElementById('fl-empresa').value
+    });
+    fluxo.unshift(novo);closeM('mFluxo');toast('✓ Lançamento registrado!');
+    if(document.getElementById('page-fluxo').classList.contains('on'))renderFluxo();
+  }catch(e){toast('Erro: '+e.message,true);}
+}
+async function salvarContrato(){
+  const cid=Number(document.getElementById('ct-cli').value);if(!cid){alert('Selecione cliente');return;}
+  try{
+    const [novo]=await sbInsert('contratos',{
+      cliente_id:cid,valor:Number(document.getElementById('ct-valor').value)||0,
+      inicio:document.getElementById('ct-inicio').value,renovacao:document.getElementById('ct-renov').value,
+      tributacao:document.getElementById('ct-trib').value,obs:document.getElementById('ct-obs').value,status:'ATIVO'
+    });
+    contratos.push(novo);closeM('mContrato');toast('✓ Contrato salvo!');
+    if(document.getElementById('page-contratos').classList.contains('on'))renderContratos();
+  }catch(e){toast('Erro: '+e.message,true);}
+}
+
+// ═══════════ MODAL ═══════════
+function openM(name){
+  if(name==='mMens'){const s=document.getElementById('nm-cli');s.innerHTML=clientes.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
+  if(name==='mContrato'){const s=document.getElementById('ct-cli');s.innerHTML=clientes.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
+  document.getElementById('ov-'+name).classList.add('on');
+}
+function closeM(name){document.getElementById('ov-'+name).classList.remove('on');}
+document.querySelectorAll('.ov').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('on');}));
+
+// ═══════════ EXPORT ═══════════
+function exportCSV(){
+  const rows=[['Cod','Cliente','Mes','Ano','Valor','Vencimento','Status','DataBaixa']];
+  mensalidades.forEach(m=>{const c=GC(m.cliente_id);rows.push([c.cod||'',c.nome||'',m.mes,m.ano,m.valor,m.vencimento,m.status,m.data_baixa||'']);});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(r=>r.join(';')).join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`fenix_${new Date().toISOString().split('T')[0]}.csv`;a.click();
+  toast('✓ CSV exportado!');
+}
+
+// ═══════════ TOAST ═══════════
+function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast on'+(err?' err':'');setTimeout(()=>t.classList.remove('on'),3500);}
+
+// ═══════════ INIT ═══════════
+(async()=>{
+  document.getElementById('dash-mes');
+  try{
+    await loadAll();
+    renderDash();
+    toast('✓ Conectado ao Supabase!');
+  }catch(e){
+    toast('Erro de conexão: '+e.message,true);
+  }
+})();
+</script>
+</body>
+</html>
