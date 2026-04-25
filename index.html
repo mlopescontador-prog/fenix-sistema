@@ -195,7 +195,10 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
 <div id="page-fluxo" class="page">
   <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
     <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">Fluxo de <span style="color:var(--acc)">Caixa</span></div>
-    <button class="btn ba bsm" onclick="openM('mFluxo')">+ Lançamento</button>
+    <div style="display:flex;gap:7px;">
+      <button class="btn bo bsm" onclick="openM('mOFX')">↑ Importar OFX Nubank</button>
+      <button class="btn ba bsm" onclick="openM('mFluxo')">+ Lançamento</button>
+    </div>
   </div>
   <div class="g4" id="fKpis"></div>
   <div class="g2">
@@ -326,6 +329,53 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
   <div class="mf"><button class="btn bo" onclick="closeM('mBaixa')">Cancelar</button><button class="btn bg" onclick="confBaixa()">✓ Confirmar</button></div>
 </div></div>
 
+<!-- MODAL OFX -->
+<div class="ov" id="ov-mOFX"><div class="modal" style="width:620px;">
+  <div class="mt">↑ Importar OFX — Nubank PJ</div>
+  <!-- DROP ZONE -->
+  <div id="ofxDrop" style="border:2px dashed var(--brd);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;" ondragover="ofxDrag(event,true)" ondragleave="ofxDrag(event,false)" ondrop="ofxDrop(event)" onclick="document.getElementById('ofxInput').click()">
+    <div style="font-size:28px;margin-bottom:8px;">📂</div>
+    <div style="font-size:13px;color:var(--txt);margin-bottom:4px;">Arraste o arquivo OFX aqui</div>
+    <div style="font-size:11px;color:var(--muted)">ou clique para selecionar · Nubank PJ → Exportar extrato → OFX</div>
+    <input type="file" id="ofxInput" accept=".ofx,.qfx" style="display:none" onchange="ofxFile(this.files[0])">
+  </div>
+  <!-- PREVIEW -->
+  <div id="ofxPreview" style="display:none;">
+    <div style="background:var(--s2);border:1px solid var(--brd);border-radius:8px;padding:12px;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <div><div style="font-size:10px;color:var(--muted)">ARQUIVO</div><div style="font-size:12px;color:var(--txt)" id="ofxNomeArq">—</div></div>
+        <div><div style="font-size:10px;color:var(--muted)">PERÍODO</div><div style="font-size:12px;color:var(--txt)" id="ofxPeriodo">—</div></div>
+        <div><div style="font-size:10px;color:var(--muted)">TRANSAÇÕES</div><div style="font-size:12px;color:var(--green);font-weight:700" id="ofxTotal">—</div></div>
+        <div><div style="font-size:10px;color:var(--muted)">ENTRADAS</div><div style="font-size:12px;color:var(--green)" id="ofxEnt">—</div></div>
+        <div><div style="font-size:10px;color:var(--muted)">SAÍDAS</div><div style="font-size:12px;color:var(--red)" id="ofxSai">—</div></div>
+      </div>
+    </div>
+    <!-- TABELA PREVIEW -->
+    <div style="max-height:220px;overflow-y:auto;border:1px solid var(--brd);border-radius:8px;margin-bottom:12px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr style="background:var(--s2);">
+          <th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Data</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Descrição</th>
+          <th style="padding:7px 10px;text-align:left;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Grupo</th>
+          <th style="padding:7px 10px;text-align:right;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Valor</th>
+        </tr></thead>
+        <tbody id="ofxTableBody"></tbody>
+      </table>
+    </div>
+    <div style="padding:9px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:7px;font-size:10px;color:var(--green);margin-bottom:12px;">
+      ✓ Classificação automática aplicada · FITID garante que importar 2x não duplica dados
+    </div>
+  </div>
+  <div id="ofxProgress" style="display:none;text-align:center;padding:20px;">
+    <div class="sp" style="margin:0 auto 10px;width:24px;height:24px;border-width:3px;"></div>
+    <div style="font-size:12px;color:var(--muted)" id="ofxProgTxt">Importando...</div>
+  </div>
+  <div class="mf">
+    <button class="btn bo" onclick="closeM('mOFX');resetOFX()">Cancelar</button>
+    <button class="btn ba" id="ofxImportBtn" style="display:none" onclick="importarOFX()">↑ Importar para Supabase</button>
+  </div>
+</div></div>
+
 <div class="ov" id="ov-mFluxo"><div class="modal">
   <div class="mt">+ Novo Lançamento</div>
   <div class="mr"><div><label class="lbl">Data</label><input class="inp" id="fl-d" type="date"></div><div><label class="lbl">Tipo</label><select class="msel" id="fl-t" style="margin:0"><option value="E">Entrada</option><option value="S">Saída</option></select></div></div>
@@ -372,8 +422,11 @@ let bId=null;
 
 // ═══ SUPABASE ═══
 async function sb(t,o={}){
-  const{method:'GET',body,query:'',select:'*'}=typeof o==='string'?{select:o}:{};
-  const{method=o.method||'GET',body:b=o.body,query:q=o.query||'',select:s=o.select||'*'}=typeof o==='string'?{}:o;
+  const opts = typeof o==='string' ? {select:o} : o;
+  const method = opts.method || 'GET';
+  const b = opts.body || null;
+  const q = opts.query || '';
+  const s = opts.select || '*';
   const url=`${SU}/rest/v1/${t}?select=${s}${q}`;
   const r=await fetch(url,{method,headers:{...SH,...(method==='POST'?{'Prefer':'return=representation'}:{})},body:b?JSON.stringify(b):undefined});
   if(!r.ok)throw new Error(await r.text());
@@ -721,6 +774,167 @@ function expCSV(){
   mens.forEach(m=>{const c=GC(m.cliente_id);r.push([c.cod||'',c.nome||'',m.mes,m.ano,m.valor,m.vencimento,m.status,m.data_baixa||'']);});
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+r.map(x=>x.join(';')).join('\n')],{type:'text/csv;charset=utf-8;'}));a.download=`fenix_${new Date().toISOString().split('T')[0]}.csv`;a.click();
   toast('✓ CSV exportado!');
+}
+
+// ═══ OFX IMPORTADOR ═══
+let ofxTransacoes = [];
+
+function ofxDrag(e, over) {
+  e.preventDefault();
+  const z = document.getElementById('ofxDrop');
+  z.style.borderColor = over ? 'var(--acc)' : 'var(--brd)';
+  z.style.background = over ? 'rgba(249,115,22,.05)' : '';
+}
+
+function ofxDrop(e) {
+  e.preventDefault();
+  ofxDrag(e, false);
+  const f = e.dataTransfer.files[0];
+  if (f) ofxFile(f);
+}
+
+function ofxFile(f) {
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = e => processOFX(e.target.result, f.name);
+  r.readAsText(f, 'UTF-8');
+}
+
+function classificarOFX(memo, valor) {
+  const m = memo.toUpperCase();
+  if (valor > 0) {
+    if (m.includes('NEOFIN')) return ['RECEITAS', 'Neofin Repasse'];
+    if (m.includes('APLICACAO') || m.includes('RESGATE') || m.includes('RDB')) return ['INVESTIMENTOS', 'Aplicação RDB'];
+    return ['RECEITAS', 'Transferência recebida'];
+  } else {
+    if (m.includes('MARCOS LOPES')) return ['DESPESAS C/ PESSOAL', 'Pro-labore Marcos'];
+    if (m.includes('CAMILA')) return ['DESPESAS C/ PESSOAL', 'Salário Camila'];
+    if (m.includes('BRENO')) return ['DESPESAS C/ PESSOAL', 'Salário Breno'];
+    if (m.includes('SHALOM') || m.includes('COWORK')) return ['DESPESAS C/ ADMINISTRATIVO', 'Aluguel Shalom'];
+    if (m.includes('DOMINIO')) return ['DESPESAS C/ SUPORTE', 'Domínio Sistemas'];
+    if (m.includes('ECONET')) return ['DESPESAS C/ SUPORTE', 'Econet'];
+    if (m.includes('NEWFORCE') || m.includes('TOMAZ')) return ['DESPESAS C/ TERCEIROS', 'Newforce DP'];
+    if (m.includes('SIMPLES') || m.includes('PGMEI') || m.includes('DAS-')) return ['IMPOSTOS S/ RECEITA', 'Simples Nacional'];
+    if (m.includes('APLICACAO')) return ['INVESTIMENTOS', 'Aplicação RDB'];
+    if (m.includes('NEOFIN')) return ['DESPESAS C/ SUPORTE', 'Neofin'];
+    if (m.includes('IUGU')) return ['DESPESAS C/ SUPORTE', 'Iugu'];
+    return ['DESPESAS C/ ADMINISTRATIVO', 'Saída Pix'];
+  }
+}
+
+function processOFX(txt, nome) {
+  // Parser OFX simples
+  const getTag = (str, tag) => { const m = str.match(new RegExp(`<${tag}>(.*?)<\/${tag}>`, 'i')); return m ? m[1].trim() : ''; };
+  const getTrns = str => [...str.matchAll(/<STMTTRN>([\s\S]*?)<\/STMTTRN>/gi)].map(m => m[1]);
+
+  const trns = getTrns(txt);
+  if (!trns.length) { toast('Arquivo OFX inválido ou sem transações', 'err'); return; }
+
+  // Período
+  const dtStart = txt.match(/<DTSTART>(\d{8})/i)?.[1] || '';
+  const dtEnd = txt.match(/<DTEND>(\d{8})/i)?.[1] || '';
+  const fmtDt = d => d ? `${d.slice(6,8)}/${d.slice(4,6)}/${d.slice(0,4)}` : '—';
+
+  ofxTransacoes = [];
+  let totalEnt = 0, totalSai = 0;
+
+  for (const t of trns) {
+    const dtRaw = (t.match(/<DTPOSTED>(\d{8})/i)?.[1] || '');
+    if (!dtRaw) continue;
+    const data = `${dtRaw.slice(0,4)}-${dtRaw.slice(4,6)}-${dtRaw.slice(6,8)}`;
+    const valorStr = getTag(t, 'TRNAMT');
+    const valor = parseFloat(valorStr);
+    if (isNaN(valor)) continue;
+    const memo = getTag(t, 'MEMO') || getTag(t, 'NAME') || 'Sem descrição';
+    const fitid = getTag(t, 'FITID');
+    const tipo = valor > 0 ? 'E' : 'S';
+    const [grupo, empresa] = classificarOFX(memo, valor);
+
+    if (valor > 0) totalEnt += valor; else totalSai += Math.abs(valor);
+
+    ofxTransacoes.push({ data, tipo, descricao: memo.slice(0, 200), valor: Math.abs(valor), grupo, empresa, fitid });
+  }
+
+  // Atualizar UI
+  document.getElementById('ofxNomeArq').textContent = nome;
+  document.getElementById('ofxPeriodo').textContent = `${fmtDt(dtStart)} → ${fmtDt(dtEnd)}`;
+  document.getElementById('ofxTotal').textContent = ofxTransacoes.length + ' transações';
+  document.getElementById('ofxEnt').textContent = R(totalEnt);
+  document.getElementById('ofxSai').textContent = R(totalSai);
+
+  // Tabela preview
+  const tb = document.getElementById('ofxTableBody');
+  tb.innerHTML = ofxTransacoes.slice(0, 30).map(t => `
+    <tr style="border-bottom:1px solid var(--brd);">
+      <td style="padding:6px 10px;font-size:10px;color:var(--muted);white-space:nowrap;">${t.data.split('-').reverse().join('/')}</td>
+      <td style="padding:6px 10px;font-size:10px;color:var(--muted3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${t.descricao}">${t.descricao.slice(0,60)}</td>
+      <td style="padding:6px 10px;font-size:9px;color:var(--muted);">${t.grupo}</td>
+      <td style="padding:6px 10px;font-size:11px;font-weight:500;text-align:right;color:${t.tipo==='E'?'var(--green)':'var(--red)'};">${t.tipo==='E'?'+':'-'}${R(t.valor)}</td>
+    </tr>`).join('') + (ofxTransacoes.length > 30 ? `<tr><td colspan="4" style="padding:8px;text-align:center;font-size:10px;color:var(--muted)">... mais ${ofxTransacoes.length - 30} transações</td></tr>` : '');
+
+  document.getElementById('ofxPreview').style.display = 'block';
+  document.getElementById('ofxImportBtn').style.display = 'inline-flex';
+}
+
+async function importarOFX() {
+  if (!ofxTransacoes.length) return;
+  document.getElementById('ofxPreview').style.display = 'none';
+  document.getElementById('ofxProgress').style.display = 'block';
+  document.getElementById('ofxImportBtn').style.display = 'none';
+
+  let ok = 0, skip = 0, err = 0;
+  const total = ofxTransacoes.length;
+
+  // Buscar FITIDs já existentes para evitar duplicatas
+  let fitidsExist = new Set();
+  try {
+    const ex = await sb('fluxo', { select: 'fitid', query: '&fitid=not.is.null' });
+    fitidsExist = new Set(ex.map(f => f.fitid));
+  } catch(e) {}
+
+  // Importar em lotes de 20
+  const novos = ofxTransacoes.filter(t => !t.fitid || !fitidsExist.has(t.fitid));
+  skip = total - novos.length;
+
+  const lotes = [];
+  for (let i = 0; i < novos.length; i += 20) lotes.push(novos.slice(i, i + 20));
+
+  for (let i = 0; i < lotes.length; i++) {
+    document.getElementById('ofxProgTxt').textContent = `Importando ${Math.min((i+1)*20, novos.length)} de ${novos.length}...`;
+    try {
+      await sbi('fluxo', lotes[i]);
+      ok += lotes[i].length;
+    } catch(e) {
+      // Tentar um por um se o lote falhar
+      for (const t of lotes[i]) {
+        try { await sbi('fluxo', t); ok++; } catch { err++; }
+      }
+    }
+    await new Promise(r => setTimeout(r, 150));
+  }
+
+  // Recarregar dados
+  try {
+    fluxo = await sb('fluxo', { select: '*', query: '&order=data.desc' });
+  } catch(e) {}
+
+  document.getElementById('ofxProgress').style.display = 'none';
+  closeM('mOFX');
+  resetOFX();
+
+  toast(`✓ OFX importado — ${ok} novos${skip ? ', ' + skip + ' duplicatas ignoradas' : ''}${err ? ', ' + err + ' erros' : ''}`);
+  if (document.getElementById('page-fluxo').classList.contains('on')) renderFluxo();
+  renderDash();
+}
+
+function resetOFX() {
+  ofxTransacoes = [];
+  document.getElementById('ofxPreview').style.display = 'none';
+  document.getElementById('ofxProgress').style.display = 'none';
+  document.getElementById('ofxImportBtn').style.display = 'none';
+  document.getElementById('ofxInput').value = '';
+  const z = document.getElementById('ofxDrop');
+  z.style.borderColor = '';z.style.background = '';
 }
 
 // ═══ TOAST ═══
