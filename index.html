@@ -464,7 +464,6 @@ async function loadAll(){
 }
 
 async function loadFluxo(ano, mes) {
-  // Busca paginada — Supabase retorna max 1000 por request
   let q = '&order=data.asc';
   if (ano) {
     const dtIni = mes
@@ -475,16 +474,27 @@ async function loadFluxo(ano, mes) {
       : `${ano}-12-31`;
     q += `&data=gte.${dtIni}&data=lte.${dtFim}`;
   }
-  // Paginação: buscar até 5000 registros em lotes de 1000
+  // Paginação via Range header (padrão Supabase/PostgREST)
   let todos = [], page = 0, tam = 1000;
   while (true) {
-    const url = `${SU}/rest/v1/fluxo?select=*${q}&limit=${tam}&offset=${page*tam}`;
-    const r = await fetch(url, {headers: SH});
-    if (!r.ok) break;
-    const lote = await r.json();
-    todos = todos.concat(lote);
-    if (lote.length < tam) break;
-    page++;
+    const ini = page * tam;
+    const fim = ini + tam - 1;
+    const url = `${SU}/rest/v1/fluxo?select=*${q}`;
+    const headers = {
+      ...SH,
+      'Range': `${ini}-${fim}`,
+      'Range-Unit': 'items',
+      'Prefer': 'count=none'
+    };
+    try {
+      const r = await fetch(url, { headers });
+      if (!r.ok) { addLog('Erro fluxo: ' + r.status); break; }
+      const lote = await r.json();
+      if (!Array.isArray(lote) || lote.length === 0) break;
+      todos = todos.concat(lote);
+      if (lote.length < tam) break;
+      page++;
+    } catch(e) { addLog('Erro loadFluxo: ' + e.message); break; }
   }
   return todos;
 }
@@ -711,7 +721,14 @@ async function renderFluxo() {
 
   // Recarregar do banco se ano/mes mudou
   document.getElementById('fLancs').innerHTML = '<div class="loading"><div class="sp"></div> Carregando...</div>';
-  fluxo = await loadFluxo(ano || null, mes || null);
+  try {
+    fluxo = await loadFluxo(ano || null, mes || null);
+    addLog('Fluxo: ' + fluxo.length + ' registros carregados');
+  } catch(e) {
+    document.getElementById('fLancs').innerHTML = `<div style="padding:20px;color:var(--red);font-size:11px;">Erro ao carregar: ${e.message}</div>`;
+    addLog('Erro renderFluxo: ' + e.message);
+    return;
+  }
 
   // Filtrar localmente por grupo e busca
   fluxoFiltrado = fluxo.filter(f => {
