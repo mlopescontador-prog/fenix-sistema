@@ -187,23 +187,7 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
       </div>
       <button class="btn bo bsm" onclick="expCSV()">↓ CSV</button>
     </div>
-    <div style="overflow-x:auto;max-height:520px;overflow-y:auto;">
-    <table style="border-collapse:collapse;width:100%;">
-      <thead style="position:sticky;top:0;z-index:10;background:var(--s2);">
-        <tr>
-          <th onclick="sortM('cod')" style="cursor:pointer;user-select:none;"># <span id="sh-cod"></span></th>
-          <th onclick="sortM('nome')" style="cursor:pointer;user-select:none;">Cliente <span id="sh-nome"></span></th>
-          <th onclick="sortM('valor')" style="cursor:pointer;user-select:none;">Valor <span id="sh-valor"></span></th>
-          <th onclick="sortM('mes')" style="cursor:pointer;user-select:none;">Mês/Ano <span id="sh-mes"></span></th>
-          <th onclick="sortM('vencimento')" style="cursor:pointer;user-select:none;">Vencimento <span id="sh-vencimento"></span></th>
-          <th onclick="sortM('status')" style="cursor:pointer;user-select:none;">Status <span id="sh-status"></span></th>
-          <th>Neofin</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody id="mTable"><tr><td colspan="8"><div class="loading"><div class="sp"></div>Carregando...</div></td></tr></tbody>
-    </table>
-    </div>
+    <table><thead><tr><th>#</th><th>Cliente</th><th>Valor</th><th>Mês/Ano</th><th>Vencimento</th><th>Status</th><th>Neofin</th><th>Ações</th></tr></thead><tbody id="mTable"><tr><td colspan="8"><div class="loading"><div class="sp"></div>Carregando...</div></td></tr></tbody></table>
   </div>
 </div>
 
@@ -227,41 +211,9 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
 <div id="page-contratos" class="page">
   <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
     <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">Gestão de <span style="color:var(--teal)">Contratos</span></div>
-    <div style="display:flex;gap:6px;">
-      <button class="btn bo bsm" onclick="openM('mModelo')">📄 Modelo Contrato</button>
-      <button class="btn bo bsm" onclick="openM('mProposta')">📋 Proposta Renovação</button>
-      <button class="btn ba bsm" onclick="openM('mContr')">+ Contrato</button>
-    </div>
+    <button class="btn ba bsm" onclick="openM('mContr')">+ Contrato</button>
   </div>
-  <!-- Painel Vencimentos -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px;">
-    <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:12px;cursor:pointer;" onclick="filtCStatus('VENCIDO')">
-      <div style="font-size:9px;color:var(--red);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Vencidos</div>
-      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--red)" id="cVenc">—</div>
-      <div style="font-size:10px;color:var(--muted)">contratos</div>
-    </div>
-    <div style="background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);border-radius:10px;padding:12px;cursor:pointer;" onclick="filtCStatus('30')">
-      <div style="font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Vencem em 30 dias</div>
-      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--yellow)" id="c30">—</div>
-      <div style="font-size:10px;color:var(--muted)">contratos</div>
-    </div>
-    <div style="background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.15);border-radius:10px;padding:12px;cursor:pointer;" onclick="filtCStatus('60')">
-      <div style="font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Vencem em 60 dias</div>
-      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--yellow)" id="c60">—</div>
-      <div style="font-size:10px;color:var(--muted)">contratos</div>
-    </div>
-    <div style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;cursor:pointer;" onclick="filtCStatus('90')">
-      <div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Vencem em 90 dias</div>
-      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--green)" id="c90">—</div>
-      <div style="font-size:10px;color:var(--muted)">contratos</div>
-    </div>
-  </div>
-  <!-- Sem data -->
-  <div id="cSemData" style="display:none;background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);border-radius:9px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--yellow);"></div>
-  <div class="tw"><div class="th2">
-    <input class="src" placeholder="🔍  Buscar..." oninput="filtC()" id="srcC">
-    <button class="btn bo bxs" onclick="filtCStatus('')" style="font-size:10px;">Ver todos</button>
-  </div><div id="cList"><div class="loading"><div class="sp"></div></div></div></div>
+  <div class="tw"><div class="th2"><input class="src" placeholder="🔍  Buscar..." oninput="filtC()" id="srcC"></div><div id="cList"><div class="loading"><div class="sp"></div></div></div></div>
 </div>
 
 <!-- COBRANÇAS -->
@@ -278,8 +230,6 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
         <button class="btn ba bsm" onclick="genMsg()">↻ Gerar</button>
         <button class="btn bo bsm" onclick="cpMsg()">📋 Copiar</button>
-        <button class="btn bo bsm" onclick="abrWA()" style="background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.3);color:#25d366;">💬 WhatsApp</button>
-        <button class="btn bo bsm" onclick="abrEmail()" style="background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--blue);">📧 E-mail</button>
         <button class="btn bn bsm" onclick="envNeofinCli()">⚡ Enviar Neofin</button>
       </div>
     </div>
@@ -428,10 +378,27 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
 
 <div class="ov" id="ov-mFluxo"><div class="modal">
   <div class="mt">+ Novo Lançamento</div>
-  <div class="mr"><div><label class="lbl">Data</label><input class="inp" id="fl-d" type="date"></div><div><label class="lbl">Tipo</label><select class="msel" id="fl-t" style="margin:0"><option value="E">Entrada</option><option value="S">Saída</option></select></div></div>
+  <div class="mr">
+    <div><label class="lbl">Data</label><input class="inp" id="fl-d" type="date"></div>
+    <div><label class="lbl">Tipo</label><select class="msel" id="fl-t" style="margin:0"><option value="E">Entrada</option><option value="S">Saída</option></select></div>
+  </div>
   <label class="lbl">Descrição</label><input class="inp" id="fl-desc">
-  <div class="mr"><div><label class="lbl">Valor (R$)</label><input class="inp" id="fl-v" type="number"></div><div><label class="lbl">Grupo DRE</label><select class="msel" id="fl-g" style="margin:0"><option>RECEITAS</option><option>DESPESAS C/ PESSOAL</option><option>DESPESAS C/ ADMINISTRATIVO</option><option>DESPESAS C/ SUPORTE</option><option>DESPESAS C/ TERCEIROS</option><option>IMPOSTOS S/ RECEITA</option><option>INVESTIMENTOS</option></select></div></div>
   <label class="lbl">Empresa</label><input class="inp" id="fl-e">
+  <div class="mr">
+    <div><label class="lbl">Valor (R$)</label><input class="inp" id="fl-v" type="number" step="0.01"></div>
+    <div><label class="lbl">Grupo DRE</label>
+      <select class="msel" id="fl-g" style="margin:0">
+        <option>RECEITAS</option><option>CERTIFICAÇÃO</option><option>IRPF</option>
+        <option>IMPOSTOS S/ RECEITA</option><option>DESPESAS C/ PESSOAL</option>
+        <option>IMPOSTOS C/ PESSOAL</option><option>CUSTO SERVIÇOS</option>
+        <option>DESPESAS C/ SUPORTE</option><option>DESPESAS C/ ADMINISTRATIVO</option>
+        <option>DESPESAS C/ TERCEIROS</option><option>DESPESAS FINANCEIRAS</option>
+        <option>RECEITA NÃO OPERACIONAL</option><option>SÓCIO</option><option>SÓCIA</option>
+        <option>INVESTIMENTOS</option><option>EMPRÉSTIMOS</option><option>REEMBOLSO</option>
+        <option>REPASSE</option><option>MENSALIDADE</option><option>COMPRA CARTEIRA</option>
+      </select>
+    </div>
+  </div>
   <div class="mf"><button class="btn bo" onclick="closeM('mFluxo')">Cancelar</button><button class="btn ba" onclick="savFluxo()">Registrar</button></div>
 </div></div>
 
@@ -451,29 +418,6 @@ tr:last-child td{border-bottom:none;}tr:hover td{background:var(--s2);}
   <div class="mr"><div><label class="lbl">Mês inicial</label><select class="msel" id="gb-mi" style="margin:0"><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div><div><label class="lbl">Qtd. meses</label><input class="inp" id="gb-q" type="number" value="12" min="1" max="24" style="margin:0;"></div></div>
   <label class="lbl" style="margin-top:9px;">Valor (R$)</label><input class="inp" id="gb-v" type="number" placeholder="Deixe em branco para usar o valor do cadastro">
   <div class="mf"><button class="btn bo" onclick="closeM('mBoletos')">Cancelar</button><button class="btn bn" onclick="genBoletos()">⚡ Criar na Neofin</button></div>
-</div></div>
-
-<!-- MODAL MODELO CONTRATO -->
-<div class="ov" id="ov-mModelo"><div class="modal" style="width:660px;max-height:90vh;">
-  <div class="mt">📄 Modelo — Contrato de Prestação de Serviços Contábeis</div>
-  <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-    <select class="msel" id="modCli" style="margin:0;flex:1;" onchange="preenchModelo()"><option value="">— Selecione cliente —</option></select>
-    <button class="btn ba bsm" onclick="cpModelo()">📋 Copiar texto</button>
-  </div>
-  <div class="mp" id="modeloTxt" style="min-height:320px;font-size:10px;line-height:1.8;"></div>
-  <div class="mf"><button class="btn bo" onclick="closeM('mModelo')">Fechar</button></div>
-</div></div>
-
-<!-- MODAL PROPOSTA RENOVAÇÃO -->
-<div class="ov" id="ov-mProposta"><div class="modal" style="width:620px;max-height:90vh;">
-  <div class="mt">📋 Proposta de Renovação de Contrato</div>
-  <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-    <select class="msel" id="propCli" style="margin:0;flex:1;" onchange="preenchProposta()"><option value="">— Selecione cliente —</option></select>
-    <input class="msel" id="propReaj" type="number" placeholder="% reajuste (ex: 10)" style="margin:0;width:130px;" onchange="preenchProposta()">
-    <button class="btn ba bsm" onclick="cpProposta()">📋 Copiar</button>
-  </div>
-  <div class="mp" id="propostaTxt" style="min-height:280px;font-size:10px;line-height:1.8;"></div>
-  <div class="mf"><button class="btn bo" onclick="closeM('mProposta')">Fechar</button></div>
 </div></div>
 
 <div class="toast" id="toast"></div>
@@ -510,12 +454,39 @@ async function sbi(t,b){return sb(t,{method:'POST',body:b});}
 async function sbu(t,id,b){return sb(t,{method:'PATCH',body:b,query:`&id=eq.${id}`});}
 
 async function loadAll(){
-  [cli,mens,fluxo,contr]=await Promise.all([
+  [cli,mens,contr]=await Promise.all([
     sb('clientes',{select:'*',query:'&order=nome'}),
     sb('mensalidades',{select:'*',query:'&order=ano.desc,mes.desc'}),
-    sb('fluxo',{select:'*',query:'&order=data.desc'}),
     sb('contratos',{select:'*',query:'&order=renovacao.asc'})
   ]);
+  // Fluxo: carregar apenas o ano atual por padrão (paginação)
+  fluxo = await loadFluxo(2026, null);
+}
+
+async function loadFluxo(ano, mes) {
+  // Busca paginada — Supabase retorna max 1000 por request
+  let q = '&order=data.asc';
+  if (ano) {
+    const dtIni = mes
+      ? `${ano}-${String(mes).padStart(2,'0')}-01`
+      : `${ano}-01-01`;
+    const dtFim = mes
+      ? `${ano}-${String(mes).padStart(2,'0')}-31`
+      : `${ano}-12-31`;
+    q += `&data=gte.${dtIni}&data=lte.${dtFim}`;
+  }
+  // Paginação: buscar até 5000 registros em lotes de 1000
+  let todos = [], page = 0, tam = 1000;
+  while (true) {
+    const url = `${SU}/rest/v1/fluxo?select=*${q}&limit=${tam}&offset=${page*tam}`;
+    const r = await fetch(url, {headers: SH});
+    if (!r.ok) break;
+    const lote = await r.json();
+    todos = todos.concat(lote);
+    if (lote.length < tam) break;
+    page++;
+  }
+  return todos;
 }
 
 // ═══ NEOFIN ═══
@@ -667,7 +638,7 @@ function nav(p,b){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
   document.getElementById('page-'+p).classList.add('on');b.classList.add('on');
-  if(p==='dash')renderDash();if(p==='mens')filtM();if(p==='fluxo')renderFluxo();
+  if(p==='dash')renderDash();if(p==='mens')filtM();if(p==='fluxo'){renderFluxo();}
   if(p==='contratos'){filtC();}if(p==='cobr')renderCobr();
   if(p==='neofin'){document.getElementById('nKey').value=NK;document.getElementById('nSec').value=NS;document.getElementById('nEnv').value=NE;busNeo();}
 }
@@ -689,16 +660,10 @@ function renderDash(){
   document.getElementById('kA').textContent=R(av.reduce((a,m)=>a+(m.valor||0),0));document.getElementById('kAs').textContent=`${av.length} cobranças`;
   document.getElementById('kC').textContent=R(mm.reduce((a,m)=>a+(m.valor||0),0));document.getElementById('kCs').textContent=`${cli.length} clientes`;
   document.getElementById('kN').textContent=nab;
-  // Bar — MELHORIA 18: todos 12 meses, distribuição correta
-  const anoBar=new Date().getFullYear();
-  const vl=[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>mens.filter(x=>x.mes===m&&x.ano===anoBar&&x.status==='PAGO').reduce((a,x)=>a+(x.valor||0),0));
+  // Bar
+  const vl=[1,2,3,4,5,6].map(m=>mens.filter(x=>x.mes===m&&x.ano===2026&&x.status==='PAGO').reduce((a,x)=>a+(x.valor||0),0));
   const mx=Math.max(...vl,1);
-  const mesAtual=new Date().getMonth()+1;
-  document.getElementById('barC').innerHTML=vl.map((v,i)=>{
-    const isAtual=i+1===mesAtual;
-    const cor=v>0?(isAtual?'var(--acc)':'var(--acc2)'):'var(--brd)';
-    return`<div class="bw"><div class="bb" style="height:${Math.max(2,Math.round(v/mx*100))}%;background:${cor};${isAtual?'box-shadow:0 0 6px rgba(249,115,22,.4);':''}" title="${M[i+1]}: ${R(v)}"></div><div class="bl" style="${isAtual?'color:var(--acc);':''}">${M[i+1]}</div></div>`;
-  }).join('');
+  document.getElementById('barC').innerHTML=vl.map((v,i)=>`<div class="bw"><div class="bb" style="height:${Math.round(v/mx*100)}%;background:${v>0?'var(--acc)':'var(--brd)'}" title="${M[i+1]}: ${R(v)}"></div><div class="bl">${M[i+1]}</div></div>`).join('');
   // Donut
   const cn={PAGO:0,VENCIDO:0,PENDENTE:0};mm.forEach(m=>{if(cn[m.status]!==undefined)cn[m.status]++;});
   const tt=Object.values(cn).reduce((a,b)=>a+b,0)||1;
@@ -736,64 +701,182 @@ function filtM(){
 }
 
 // ═══ FLUXO ═══
-function renderFluxo(){
-  const fxMe=Number(document.getElementById('fxMe')?.value||0);
-  const fxAn=Number(document.getElementById('fxAn')?.value||2026);
-  const fl=fluxo.filter(f=>{
-    if(!f.data)return false;
-    if(!fxMe)return true;
-    const [y,m]=f.data.split('-').map(Number);
-    return m===fxMe&&y===fxAn;
+let fluxoFiltrado = [];
+
+async function renderFluxo() {
+  const ano = Number(document.getElementById('fxAn')?.value || 0);
+  const mes = Number(document.getElementById('fxMe')?.value || 0);
+  const grp = document.getElementById('fxGrp')?.value || '';
+  const src = (document.getElementById('fxSrc')?.value || '').toLowerCase();
+
+  // Recarregar do banco se ano/mes mudou
+  document.getElementById('fLancs').innerHTML = '<div class="loading"><div class="sp"></div> Carregando...</div>';
+  fluxo = await loadFluxo(ano || null, mes || null);
+
+  // Filtrar localmente por grupo e busca
+  fluxoFiltrado = fluxo.filter(f => {
+    if (grp && f.grupo !== grp) return false;
+    if (src && !(
+      (f.descricao||'').toLowerCase().includes(src) ||
+      (f.empresa||'').toLowerCase().includes(src)
+    )) return false;
+    return true;
   });
-  const en=fl.filter(f=>f.tipo==='E').reduce((a,f)=>a+(f.valor||0),0);
-  const sa=fl.filter(f=>f.tipo==='S').reduce((a,f)=>a+(f.valor||0),0);
-  const sl=en-sa;
-  document.getElementById('fKpis').innerHTML=`<div class="kpi g"><div class="kl">Entradas</div><div class="kv g">${R(en)}</div><div class="ks">${fl.filter(f=>f.tipo==='E').length} lançamentos</div></div><div class="kpi r"><div class="kl">Saídas</div><div class="kv r">${R(sa)}</div><div class="ks">${fl.filter(f=>f.tipo==='S').length} lançamentos</div></div><div class="kpi ${sl>=0?'g':'r'}"><div class="kl">Saldo</div><div class="kv ${sl>=0?'g':'r'}">${R(sl)}</div><div class="ks">${sl>=0?'positivo':'negativo'}</div></div><div class="kpi b"><div class="kl">Margem</div><div class="kv b">${en>0?((sl/en)*100).toFixed(1):'0'}%</div><div class="ks">receita líquida</div></div>`;
-  // MELHORIA 1+2: Colunas com saldo acumulado, entradas verde saídas vermelho sem sinal
-  const flOrd=[...fl].sort((a,b)=>a.data>b.data?1:-1);
-  let saldoAc=0;
-  const lStyle='display:grid;grid-template-columns:75px 1fr 100px 100px 110px;gap:0;align-items:center;padding:6px 12px;border-bottom:1px solid var(--brd);font-size:11px;';
-  const hStyle='display:grid;grid-template-columns:75px 1fr 100px 100px 110px;gap:0;padding:7px 12px;background:var(--s2);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:5;';
-  const header=`<div style="${hStyle}"><span>Data</span><span>Descrição</span><span style="text-align:right">Entradas</span><span style="text-align:right">Saídas</span><span style="text-align:right">Saldo Acum.</span></div>`;
-  const rows=flOrd.map(f=>{
-    saldoAc+=f.tipo==='E'?(f.valor||0):-(f.valor||0);
-    const corSaldo=saldoAc>=0?'var(--green)':'var(--red)';
-    return`<div style="${lStyle}" onmouseenter="this.style.background='var(--s2)'" onmouseleave="this.style.background=''">
-      <span style="color:var(--muted);font-size:10px;">${f.data?f.data.split('-').reverse().join('/'):'—'}</span>
-      <span style="color:var(--muted3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${f.descricao||''}">${f.descricao||'—'}<span style="font-size:9px;color:var(--muted);margin-left:6px;">${f.grupo||''}</span></span>
+
+  // Label período
+  const M2 = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const label = ano
+    ? (mes ? `${M2[mes]}/${ano}` : `Ano ${ano}`)
+    : 'Todo o período (2020–2026)';
+  document.getElementById('fxLabel').textContent = `${fluxoFiltrado.length} lançamentos — ${label}`;
+
+  const en = fluxoFiltrado.filter(f=>f.tipo==='E').reduce((a,f)=>a+(f.valor||0),0);
+  const sa = fluxoFiltrado.filter(f=>f.tipo==='S').reduce((a,f)=>a+(f.valor||0),0);
+  const sl = en - sa;
+  const rec = fluxoFiltrado.filter(f=>f.grupo==='RECEITAS').reduce((a,f)=>a+(f.valor||0),0);
+
+  // KPIs
+  document.getElementById('fKpis').innerHTML = `
+    <div class="kpi g"><div class="kl">Entradas</div><div class="kv g">${R(en)}</div><div class="ks">${fluxoFiltrado.filter(f=>f.tipo==='E').length} lançamentos</div></div>
+    <div class="kpi r"><div class="kl">Saídas</div><div class="kv r">${R(sa)}</div><div class="ks">${fluxoFiltrado.filter(f=>f.tipo==='S').length} lançamentos</div></div>
+    <div class="kpi ${sl>=0?'g':'r'}"><div class="kl">Saldo Final</div><div class="kv ${sl>=0?'g':'r'}">${R(sl)}</div><div class="ks">${sl>=0?'positivo':'negativo'}</div></div>
+    <div class="kpi b"><div class="kl">Margem s/ Receita</div><div class="kv b">${rec>0?((sl/rec)*100).toFixed(1):'0'}%</div><div class="ks">resultado / receita bruta</div></div>`;
+
+  // Lançamentos ordenados por data ASC com saldo acumulado
+  const ord = [...fluxoFiltrado].sort((a,b)=>a.data>b.data?1:-1);
+  let saldoAc = 0;
+  const gridStyle = 'display:grid;grid-template-columns:72px 1fr 95px 95px 105px 32px;padding:7px 12px;border-bottom:1px solid var(--brd);font-size:11px;align-items:center;cursor:pointer;transition:background .15s;';
+
+  document.getElementById('fLancs').innerHTML = ord.map(f => {
+    saldoAc += f.tipo === 'E' ? (f.valor||0) : -(f.valor||0);
+    const corSaldo = saldoAc >= 0 ? 'var(--green)' : 'var(--red)';
+    const dt = f.data ? f.data.split('-').reverse().join('/') : '—';
+    return `<div style="${gridStyle}" onmouseenter="this.style.background='var(--s2)'" onmouseleave="this.style.background=''" onclick="abrEditFluxo(${f.id})">
+      <span style="color:var(--muted);font-size:10px;white-space:nowrap;">${dt}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${f.descricao||''}">
+        <span style="color:var(--txt);">${f.descricao||'—'}</span>
+        ${f.empresa?`<span style="font-size:9px;color:var(--muted);margin-left:5px;">${f.empresa}</span>`:''}
+      </span>
       <span style="text-align:right;color:var(--green);font-weight:500;">${f.tipo==='E'?R(f.valor):'—'}</span>
       <span style="text-align:right;color:var(--red);font-weight:500;">${f.tipo==='S'?R(f.valor):'—'}</span>
-      <span style="text-align:right;color:${corSaldo};font-weight:600;font-family:'Syne',sans-serif;">${R(saldoAc)}</span>
+      <span style="text-align:right;color:${corSaldo};font-weight:700;font-family:'Syne',sans-serif;font-size:11px;">${R(saldoAc)}</span>
+      <span style="text-align:right;"><button class="btn bo bxs" onclick="event.stopPropagation();abrEditFluxo(${f.id})" style="font-size:9px;padding:2px 5px;">✏️</button></span>
     </div>`;
-  }).join('');
-  document.getElementById('fLancs').innerHTML=header+(rows||'<div style="padding:24px;text-align:center;color:var(--muted);font-size:11px;">Nenhum lançamento</div>');
-  // MELHORIA 4: DRE Gerencial padrão contábil
-  const grp={};fl.forEach(f=>{if(!grp[f.grupo])grp[f.grupo]={e:0,s:0};f.tipo==='E'?grp[f.grupo].e+=f.valor||0:grp[f.grupo].s+=f.valor||0;});
-  const rec=grp['RECEITAS']?.e||0;
-  const imp=grp['IMPOSTOS S/ RECEITA']?.s||0;
-  const recL=rec-imp;
-  const cust=grp['DESPESAS C/ SUPORTE']?.s||0;
-  const lucB=recL-cust;
-  const desPes=grp['DESPESAS C/ PESSOAL']?.s||0;
-  const desAdm=grp['DESPESAS C/ ADMINISTRATIVO']?.s||0;
-  const desTer=grp['DESPESAS C/ TERCEIROS']?.s||0;
-  const desOp=desPes+desAdm+desTer;
-  const ebitda=lucB-desOp;
-  const inv=grp['INVESTIMENTOS']?.s||0;
-  const lucL=ebitda-inv;
-  const dreRow=(label,val,cls,bold,sep)=>`<div style="display:flex;justify-content:space-between;padding:${sep?'8px 0 4px':'4px 0'};border-bottom:1px solid var(--brd);font-size:${bold?'11px':'10px'};${sep?'border-top:1px solid var(--brd);margin-top:4px;':''}"><span style="color:${bold?'var(--txt)':'var(--muted2)'};${bold?'font-weight:600;font-family:Syne,sans-serif;':''}">${label}</span><span style="color:${cls};font-weight:${bold?'700':'400'};${bold?'font-family:Syne,sans-serif;':''};">${R(val)}</span></div>`;
-  document.getElementById('dre').innerHTML=
-    dreRow('(+) Receita Bruta',rec,'var(--green)',true)+
-    dreRow('(-) Impostos s/ Receita',-imp,'var(--red)')+
-    dreRow('(=) Receita Líquida',recL,recL>=0?'var(--green)':'var(--red)',true,true)+
-    dreRow('(-) Custo dos Serviços',-cust,'var(--red)')+
-    dreRow('(=) Lucro Bruto',lucB,lucB>=0?'var(--green)':'var(--red)',true,true)+
-    dreRow('(-) Desp. c/ Pessoal',-desPes,'var(--red)')+
-    dreRow('(-) Desp. Administrativas',-desAdm,'var(--red)')+
-    dreRow('(-) Desp. c/ Terceiros',-desTer,'var(--red)')+
-    dreRow('(=) EBITDA',ebitda,ebitda>=0?'var(--green)':'var(--red)',true,true)+
-    dreRow('(-) Investimentos / Finan.',-inv,'var(--red)')+
-    dreRow('(=) Lucro Líquido',lucL,lucL>=0?'var(--green)':'var(--red)',true,true);
+  }).join('') || '<div style="padding:28px;text-align:center;color:var(--muted);font-size:11px;">Nenhum lançamento encontrado</div>';
+
+  // DRE Gerencial — mesmo período
+  renderDRE(fluxoFiltrado, label);
+}
+
+function renderDRE(fl, label) {
+  const grp = {};
+  fl.forEach(f => {
+    if (!grp[f.grupo]) grp[f.grupo] = { e:0, s:0 };
+    f.tipo==='E' ? grp[f.grupo].e += f.valor||0 : grp[f.grupo].s += f.valor||0;
+  });
+  const g = k => grp[k] || { e:0, s:0 };
+
+  const rec    = g('RECEITAS').e;
+  const cert   = g('CERTIFICAÇÃO').e;
+  const irpf   = g('IRPF').e;
+  const recNOp = g('RECEITA NÃO OPERACIONAL').e;
+  const imp    = g('IMPOSTOS S/ RECEITA').s;
+  const recBruta = rec + cert + irpf;
+  const recLiq   = recBruta - imp;
+
+  const salarios = g('DESPESAS C/ PESSOAL').s;
+  const impPes   = g('IMPOSTOS C/ PESSOAL').s;
+  const custServ = g('CUSTO SERVIÇOS').s;
+  const totalPes = salarios + impPes + custServ;
+  const margemBruta = recLiq - totalPes;
+
+  const suporte = g('DESPESAS C/ SUPORTE').s;
+  const adm     = g('DESPESAS C/ ADMINISTRATIVO').s;
+  const terc    = g('DESPESAS C/ TERCEIROS').s;
+  const fin     = g('DESPESAS FINANCEIRAS').s;
+  const totalOp = suporte + adm + terc + fin;
+  const margemOp = margemBruta - totalOp;
+
+  const socio  = g('SÓCIO').s - g('SÓCIO').e;
+  const socia  = g('SÓCIA').s - g('SÓCIA').e;
+  const invest = g('INVESTIMENTOS').s - g('INVESTIMENTOS').e;
+  const margemLiq = margemOp + recNOp - socio - socia;
+
+  const row = (label2, val, cor, bold, sep, sub) => {
+    const c = cor || (val >= 0 ? 'var(--green)' : 'var(--red)');
+    return `<div style="display:flex;justify-content:space-between;padding:${sep?'7px 0 3px':'3px 0'};border-bottom:1px solid var(--brd);${sep?'border-top:1px solid rgba(255,255,255,.07);margin-top:4px;':''}">
+      <span style="font-size:${bold?'11px':'10px'};color:${bold?'var(--txt)':'var(--muted2)'};${sub?'padding-left:10px;':''}${bold?'font-weight:600;':''}">${label2}</span>
+      <span style="font-size:${bold?'11px':'10px'};color:${c};font-weight:${bold?'700':'400'};font-family:${bold?'Syne,sans-serif':'inherit'};">${R(Math.abs(val))}</span>
+    </div>`;
+  };
+
+  document.getElementById('dreTitulo').textContent = `DRE Gerencial — ${label}`;
+  document.getElementById('dre').innerHTML =
+    row('(+) Receita Contabilidade', rec, 'var(--green)', false, false, true) +
+    row('(+) Certificação Digital', cert, 'var(--green)', false, false, true) +
+    row('(+) IRPF', irpf, 'var(--green)', false, false, true) +
+    row('RECEITA BRUTA', recBruta, recBruta>=0?'var(--green)':'var(--red)', true, true) +
+    row('(-) Impostos Simples', -imp, 'var(--red)', false, false, true) +
+    row('RECEITA LÍQUIDA', recLiq, recLiq>=0?'var(--green)':'var(--red)', true, true) +
+    row('(-) Despesas c/ Pessoal', -salarios, 'var(--red)', false, false, true) +
+    row('(-) Impostos c/ Pessoal', -impPes, 'var(--red)', false, false, true) +
+    row('(-) Custo Serviços', -custServ, 'var(--red)', false, false, true) +
+    row('MARGEM BRUTA', margemBruta, margemBruta>=0?'var(--green)':'var(--red)', true, true) +
+    row('(-) Desp. c/ Suporte', -suporte, 'var(--red)', false, false, true) +
+    row('(-) Desp. Administrativas', -adm, 'var(--red)', false, false, true) +
+    row('(-) Desp. c/ Terceiros', -terc, 'var(--red)', false, false, true) +
+    row('(-) Desp. Financeiras', -fin, 'var(--red)', false, false, true) +
+    row('MARGEM OPERACIONAL', margemOp, margemOp>=0?'var(--green)':'var(--red)', true, true) +
+    row('(+) Receita Não Operacional', recNOp, 'var(--green)', false, false, true) +
+    row('(-) Distribuição Sócios', -(socio+socia), 'var(--red)', false, false, true) +
+    row('MARGEM LÍQUIDA FINAL', margemLiq, margemLiq>=0?'var(--green)':'var(--red)', true, true) +
+    `<div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:right;">
+      % Lucro: <span style="color:${margemLiq>=0?'var(--green)':'var(--red)'};">${recBruta>0?((margemLiq/recBruta)*100).toFixed(1):'0'}%</span>
+    </div>`;
+}
+
+// ═══ EDITAR LANÇAMENTO ═══
+function abrEditFluxo(id) {
+  const f = fluxo.find(x => x.id === id);
+  if (!f) return;
+  document.getElementById('ef-id').value = id;
+  document.getElementById('ef-d').value = f.data || '';
+  document.getElementById('ef-t').value = f.tipo || 'E';
+  document.getElementById('ef-desc').value = f.descricao || '';
+  document.getElementById('ef-emp').value = f.empresa || '';
+  document.getElementById('ef-v').value = f.valor || 0;
+  document.getElementById('ef-g').value = f.grupo || '';
+  openM('mEditFluxo');
+}
+async function savEditFluxo() {
+  const id = Number(document.getElementById('ef-id').value);
+  const body = {
+    data:      document.getElementById('ef-d').value,
+    tipo:      document.getElementById('ef-t').value,
+    descricao: document.getElementById('ef-desc').value,
+    empresa:   document.getElementById('ef-emp').value,
+    valor:     Number(document.getElementById('ef-v').value) || 0,
+    grupo:     document.getElementById('ef-g').value
+  };
+  try {
+    await sbu('fluxo', id, body);
+    const idx = fluxo.findIndex(x => x.id === id);
+    if (idx >= 0) Object.assign(fluxo[idx], body);
+    closeM('mEditFluxo');
+    toast('✓ Lançamento atualizado!');
+    renderFluxo();
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+}
+
+// ═══ EXPORT CSV FLUXO ═══
+function expFluxoCSV() {
+  const rows = [['Data','Tipo','Descrição','Empresa','Grupo DRE','Valor']];
+  fluxoFiltrado.forEach(f => rows.push([f.data,f.tipo,f.descricao,f.empresa,f.grupo,f.valor]));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+rows.map(x=>x.join(';')).join('\n')], {type:'text/csv;charset=utf-8;'}));
+  a.download = `fenix_fluxo_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  toast('✓ CSV exportado!');
 }
 
 // ═══ CONTRATOS ═══
@@ -822,12 +905,7 @@ function renderCobr(){
   renderInad();
 }
 function renderInad(){
-  const hj=new Date();const m6=new Date();m6.setMonth(m6.getMonth()-6);
-  const vc=mens.filter(m=>{
-    if(m.status!=='VENCIDO')return false;
-    if(!m.vencimento)return true;
-    const d=new Date(m.vencimento);return d>=m6&&d<=hj;
-  });
+  const vc=mens.filter(m=>m.status==='VENCIDO');
   const pr={};vc.forEach(m=>{if(!pr[m.cliente_id])pr[m.cliente_id]=[];pr[m.cliente_id].push(m);});
   document.getElementById('inadC').innerHTML=Object.entries(pr).map(([cid,ms])=>{
     const c=GC(Number(cid));
@@ -857,31 +935,6 @@ function genMsg(){
   pv.textContent=msg;
 }
 function cpMsg(){const m=document.getElementById('mPrev').textContent;if(m.length<5)return;navigator.clipboard.writeText(m).then(()=>toast('📋 Copiado!'));}
-function abrWA(){
-  const cid=Number(document.getElementById('coCli').value);
-  const c=GC(cid);const tel=(c.tel||'').replace(/\D/g,'');
-  const msg=document.getElementById('mPrev').textContent;
-  if(!tel){toast('Cliente sem telefone cadastrado','warn');return;}
-  const num=tel.length===10?'55'+tel.slice(0,2)+'9'+tel.slice(2):'55'+tel;
-  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
-}
-function abrEmail(){
-  const cid=Number(document.getElementById('coCli').value);
-  const c=GC(cid);
-  const msg=document.getElementById('mPrev').textContent;
-  const linhas=msg.split('\n');
-  const assunto=linhas[0]?.includes('Assunto:')?linhas[0].replace('Assunto:','').trim():'Mensalidade — Fênix Serviços Contábeis';
-  const corpo=msg;
-  window.open('mailto:'+(c.email||'')+'?subject='+encodeURIComponent(assunto)+'&body='+encodeURIComponent(corpo));
-}
-function abrProposta(cid){
-  openM('mProposta');
-  setTimeout(()=>{
-    const s=document.getElementById('propCli');
-    if(s)s.value=cid;
-    preenchProposta();
-  },100);
-}
 function irCobr(cid){document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.getElementById('page-cobr').classList.add('on');document.querySelectorAll('.nb')[4].classList.add('on');renderCobr();setTimeout(()=>{document.getElementById('coCli').value=cid;genMsg();},100);}
 
 // ═══ BAIXA ═══
@@ -910,7 +963,20 @@ async function savMens(){
   try{const[nv]=await sbi('mensalidades',{cliente_id:cid,mes:Number(document.getElementById('nm-mes').value),ano:Number(document.getElementById('nm-ano').value),valor:Number(document.getElementById('nm-valor').value)||0,vencimento:document.getElementById('nm-venc').value,status:document.getElementById('nm-st').value,formato:'Boleto Neofin'});mens.unshift(nv);closeM('mMens');toast('✓ Mensalidade registrada!');if(document.getElementById('page-mens').classList.contains('on'))filtM();}catch(e){toast('Erro: '+e.message,'err');}
 }
 async function savFluxo(){
-  try{const[nv]=await sbi('fluxo',{data:document.getElementById('fl-d').value,tipo:document.getElementById('fl-t').value,descricao:document.getElementById('fl-desc').value,valor:Number(document.getElementById('fl-v').value)||0,grupo:document.getElementById('fl-g').value,empresa:document.getElementById('fl-e').value});fluxo.unshift(nv);closeM('mFluxo');toast('✓ Lançamento registrado!');if(document.getElementById('page-fluxo').classList.contains('on'))renderFluxo();}catch(e){toast('Erro: '+e.message,'err');}
+  try{
+    const[nv]=await sbi('fluxo',{
+      data:      document.getElementById('fl-d').value,
+      tipo:      document.getElementById('fl-t').value,
+      descricao: document.getElementById('fl-desc').value,
+      empresa:   document.getElementById('fl-e').value,
+      valor:     Number(document.getElementById('fl-v').value)||0,
+      grupo:     document.getElementById('fl-g').value
+    });
+    fluxo.unshift(nv);
+    closeM('mFluxo');
+    toast('✓ Lançamento registrado!');
+    if(document.getElementById('page-fluxo').classList.contains('on')) renderFluxo();
+  }catch(e){toast('Erro: '+e.message,'err');}
 }
 async function savContr(){
   const cid=Number(document.getElementById('ct-c').value);if(!cid){alert('Selecione cliente');return;}
@@ -918,6 +984,12 @@ async function savContr(){
 }
 
 // ═══ MODAL ═══
+function openM(n){
+  if(n==='mMens'){document.getElementById('nm-cli').innerHTML=cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
+  if(n==='mContr'){document.getElementById('ct-c').innerHTML=cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
+  if(n==='mBoletos'){document.getElementById('gb-c').innerHTML=cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
+  document.getElementById('ov-'+n).classList.add('on');
+}
 function closeM(n){document.getElementById('ov-'+n).classList.remove('on');}
 document.querySelectorAll('.ov').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('on');}));
 
@@ -1092,151 +1164,6 @@ function resetOFX() {
 
 // ═══ TOAST ═══
 function toast(m,t){const el=document.getElementById('toast');el.textContent=m;el.className='toast on'+(t?' '+t:'');setTimeout(()=>el.classList.remove('on'),3500);}
-
-// ═══ MODELOS (MELHORIA 14+15) ═══
-function openM(n){
-  if(n==='mMens'){document.getElementById('nm-cli').innerHTML=cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
-  if(n==='mContr'){document.getElementById('ct-c').innerHTML=cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
-  if(n==='mBoletos'){document.getElementById('gb-c').innerHTML=cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');}
-  if(n==='mModelo'){document.getElementById('modCli').innerHTML='<option value="">— Selecione cliente —</option>'+cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');document.getElementById('modeloTxt').textContent='Selecione um cliente para gerar o modelo.';}
-  if(n==='mProposta'){document.getElementById('propCli').innerHTML='<option value="">— Selecione cliente —</option>'+cli.map(c=>`<option value="${c.id}">${c.cod||''} · ${c.nome}</option>`).join('');document.getElementById('propostaTxt').textContent='Selecione um cliente para gerar a proposta.';}
-  document.getElementById('ov-'+n).classList.add('on');
-}
-function preenchModelo(){
-  const cid=Number(document.getElementById('modCli').value);
-  const el=document.getElementById('modeloTxt');
-  if(!cid){el.textContent='Selecione um cliente.';return;}
-  const c=GC(cid);
-  const hj=new Date();
-  const dtFmt=d=>d?d.split('-').reverse().join('/'):(hj.getDate()+'/'+(hj.getMonth()+1)+'/'+hj.getFullYear());
-  const ct=contr.find(x=>x.cliente_id===cid);
-  const inicio=ct?.inicio?dtFmt(ct.inicio):dtFmt(null);
-  const renovacao=ct?.renovacao?dtFmt(ct.renovacao):'12 meses após o início';
-  el.textContent=`CONTRATO DE PRESTAÇÃO DE SERVIÇOS CONTÁBEIS
-
-Pelo presente instrumento particular, as partes:
-
-CONTRATANTE: ${c.nome}
-CNPJ: ${c.cnpj||'__.___.___/____-__'}
-Representada por: ___________________________
-Endereço: ___________________________________
-
-CONTRATADA: FÊNIX SERVIÇOS CONTÁBEIS LTDA
-CNPJ: 17.381.348/0001-79
-Representante: Marcos Lopes
-Endereço: São Paulo – SP
-
-Têm entre si, justo e acordado, o seguinte:
-
-CLÁUSULA 1ª – OBJETO
-A CONTRATADA prestará ao CONTRATANTE serviços de assessoria e escrituração contábil, incluindo:
-• Escrituração contábil e fiscal
-• Apuração de tributos (${c.trib||'regime tributário aplicável'})
-• Elaboração de declarações acessórias
-• Folha de pagamento e encargos sociais
-• Assessoria e consultoria contábil-fiscal
-
-CLÁUSULA 2ª – VALOR E PAGAMENTO
-Pelos serviços prestados, o CONTRATANTE pagará mensalmente à CONTRATADA o valor de
-R$ ${Number(c.valor||0).toFixed(2).replace('.',',')} (${valorExtenso(c.valor||0)}),
-com vencimento todo dia ${c.venc_dia||20} de cada mês,
-mediante boleto bancário, Pix ou transferência bancária.
-
-CLÁUSULA 3ª – PRAZO
-O presente contrato vigorará a partir de ${inicio}, pelo prazo de 12 (doze) meses,
-renovando-se automaticamente por igual período, salvo manifestação contrária com 30 dias de antecedência.
-
-CLÁUSULA 4ª – REAJUSTE
-O valor dos honorários será reajustado anualmente pelo IPCA acumulado do período, ou em percentual acordado entre as partes, com prévia notificação.
-
-CLÁUSULA 5ª – OBRIGAÇÕES DO CONTRATANTE
-• Fornecer documentação completa até o dia 10 de cada mês
-• Manter cadastro e informações atualizados
-• Cumprir orientações fiscais e contábeis da CONTRATADA
-• Efetuar pagamentos nos prazos acordados
-
-CLÁUSULA 6ª – OBRIGAÇÕES DA CONTRATADA
-• Manter sigilo das informações do CONTRATANTE
-• Cumprir prazos legais e obrigações acessórias
-• Prestar assessoria contábil-fiscal dentro do escopo contratado
-• Comunicar ao CONTRATANTE sobre alterações legais relevantes
-
-CLÁUSULA 7ª – RESCISÃO
-O contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 (trinta) dias.
-Em caso de inadimplência, a CONTRATADA poderá suspender os serviços após 30 dias de atraso.
-
-CLÁUSULA 8ª – FORO
-Fica eleito o foro da Comarca de São Paulo/SP para dirimir quaisquer dúvidas.
-
-São Paulo, ${inicio}
-
-___________________________________          ___________________________________
-${c.nome}                                    FÊNIX SERVIÇOS CONTÁBEIS LTDA
-CONTRATANTE                                  CONTRATADA`;
-}
-function valorExtenso(v){
-  const n=Math.floor(v);if(n===0)return'zero reais';
-  const u=['','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','catorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
-  const d=['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
-  const c2=['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
-  if(n===100)return'cem reais';
-  if(n<20)return u[n]+' reais';
-  if(n<100)return d[Math.floor(n/10)]+(n%10?' e '+u[n%10]:'')+' reais';
-  return c2[Math.floor(n/100)]+(n%100?' e '+(n%100<20?u[n%100]:d[Math.floor(n%100/10)]+(n%10?' e '+u[n%10]:'')):'') +' reais';
-}
-function preenchProposta(){
-  const cid=Number(document.getElementById('propCli').value);
-  const reaj=Number(document.getElementById('propReaj').value)||10;
-  const el=document.getElementById('propostaTxt');
-  if(!cid){el.textContent='Selecione um cliente.';return;}
-  const c=GC(cid);
-  const nv=(c.valor||0)*(1+reaj/100);
-  const hj=new Date();
-  const dtHj=hj.getDate()+'/'+(hj.getMonth()+1)+'/'+hj.getFullYear();
-  el.textContent=`PROPOSTA DE RENOVAÇÃO DE CONTRATO DE SERVIÇOS CONTÁBEIS
-
-São Paulo, ${dtHj}
-
-A/C: ${c.nome}
-CNPJ: ${c.cnpj||'—'}
-
-Prezado(a) cliente,
-
-É com satisfação que apresentamos a proposta de renovação dos serviços contábeis prestados pela
-FÊNIX SERVIÇOS CONTÁBEIS LTDA para o próximo período.
-
-RESUMO DOS SERVIÇOS PRESTADOS
-• Escrituração contábil e fiscal
-• Apuração de tributos — ${c.trib||'—'}
-• Obrigações acessórias e declarações
-• Folha de pagamento
-• Assessoria contábil-fiscal contínua
-
-PROPOSTA FINANCEIRA
-
-Valor atual:         R$ ${Number(c.valor||0).toFixed(2).replace('.',',')}
-Reajuste proposto:   ${reaj}% (IPCA + margem)
-Novo valor mensal:   R$ ${nv.toFixed(2).replace('.',',')}
-Vigência:            12 meses a partir da assinatura
-Vencimento:          Dia ${c.venc_dia||20} de cada mês
-Formas de pagamento: Boleto bancário, Pix ou transferência
-
-CONDIÇÕES ESPECIAIS
-• Manutenção de todos os serviços contratados
-• Assessoria ilimitada por e-mail e WhatsApp
-• Sem taxa de abertura ou adesão
-
-Para aceitar esta proposta, basta nos confirmar por WhatsApp ou e-mail.
-Em caso de dúvidas, entre em contato com Marcos Lopes: (11) 97464-5012.
-
-Atenciosamente,
-
-Marcos Lopes
-Fênix Serviços Contábeis
-marcos@fenixcont.com.br | (11) 97464-5012`;
-}
-function cpModelo(){const t=document.getElementById('modeloTxt').textContent;if(t.length<20)return;navigator.clipboard.writeText(t).then(()=>toast('📋 Modelo copiado!'));}
-function cpProposta(){const t=document.getElementById('propostaTxt').textContent;if(t.length<20)return;navigator.clipboard.writeText(t).then(()=>toast('📋 Proposta copiada!'));}
 
 // ═══ INIT ═══
 (async()=>{
