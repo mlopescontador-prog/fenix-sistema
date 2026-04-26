@@ -459,12 +459,12 @@ async function loadAll(){
     sb('mensalidades',{select:'*',query:'&order=ano.desc,mes.desc'}),
     sb('contratos',{select:'*',query:'&order=renovacao.asc'})
   ]);
-  // Fluxo: carregar apenas o ano atual por padrão (paginação)
-  fluxo = await loadFluxo(2026, null);
+  // Fluxo carrega sob demanda ao abrir a aba
+  fluxo = [];
 }
 
 async function loadFluxo(ano, mes) {
-  let q = '&order=data.asc';
+  let filtro = '';
   if (ano) {
     const dtIni = mes
       ? `${ano}-${String(mes).padStart(2,'0')}-01`
@@ -472,29 +472,28 @@ async function loadFluxo(ano, mes) {
     const dtFim = mes
       ? `${ano}-${String(mes).padStart(2,'0')}-31`
       : `${ano}-12-31`;
-    q += `&data=gte.${dtIni}&data=lte.${dtFim}`;
+    filtro = `&data=gte.${dtIni}&data=lte.${dtFim}`;
   }
-  // Paginação via Range header (padrão Supabase/PostgREST)
-  let todos = [], page = 0, tam = 1000;
+  // Paginação com limit/offset — compatível com Supabase free tier
+  let todos = [], offset = 0, limit = 1000;
   while (true) {
-    const ini = page * tam;
-    const fim = ini + tam - 1;
-    const url = `${SU}/rest/v1/fluxo?select=*${q}`;
-    const headers = {
-      ...SH,
-      'Range': `${ini}-${fim}`,
-      'Range-Unit': 'items',
-      'Prefer': 'count=none'
-    };
+    const url = `${SU}/rest/v1/fluxo?select=*${filtro}&order=data.asc&limit=${limit}&offset=${offset}`;
     try {
-      const r = await fetch(url, { headers });
-      if (!r.ok) { addLog('Erro fluxo: ' + r.status); break; }
+      const r = await fetch(url, { headers: SH });
+      if (!r.ok) {
+        const txt = await r.text();
+        addLog('Erro fluxo HTTP ' + r.status + ': ' + txt.slice(0,80));
+        break;
+      }
       const lote = await r.json();
       if (!Array.isArray(lote) || lote.length === 0) break;
       todos = todos.concat(lote);
-      if (lote.length < tam) break;
-      page++;
-    } catch(e) { addLog('Erro loadFluxo: ' + e.message); break; }
+      if (lote.length < limit) break;
+      offset += limit;
+    } catch(e) {
+      addLog('Erro loadFluxo: ' + e.message);
+      break;
+    }
   }
   return todos;
 }
@@ -648,7 +647,7 @@ function nav(p,b){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
   document.getElementById('page-'+p).classList.add('on');b.classList.add('on');
-  if(p==='dash')renderDash();if(p==='mens')filtM();if(p==='fluxo'){renderFluxo();}
+  if(p==='dash')renderDash();if(p==='mens')filtM();if(p==='fluxo'){renderFluxo().catch(e=>toast('Erro fluxo: '+e.message,'err'));}
   if(p==='contratos'){filtC();}if(p==='cobr')renderCobr();
   if(p==='neofin'){document.getElementById('nKey').value=NK;document.getElementById('nSec').value=NS;document.getElementById('nEnv').value=NE;busNeo();}
 }
@@ -714,18 +713,25 @@ function filtM(){
 let fluxoFiltrado = [];
 
 async function renderFluxo() {
-  const ano = Number(document.getElementById('fxAn')?.value || 0);
-  const mes = Number(document.getElementById('fxMe')?.value || 0);
-  const grp = document.getElementById('fxGrp')?.value || '';
-  const src = (document.getElementById('fxSrc')?.value || '').toLowerCase();
+  const elAno = document.getElementById('fxAn');
+  const elMes = document.getElementById('fxMe');
+  const elGrp = document.getElementById('fxGrp');
+  const elSrc = document.getElementById('fxSrc');
+  const elLancs = document.getElementById('fLancs');
 
-  // Recarregar do banco se ano/mes mudou
-  document.getElementById('fLancs').innerHTML = '<div class="loading"><div class="sp"></div> Carregando...</div>';
+  if (!elLancs) return; // página não está visível
+
+  const ano = Number(elAno?.value || 2026);
+  const mes = Number(elMes?.value || 0);
+  const grp = elGrp?.value || '';
+  const src = (elSrc?.value || '').toLowerCase();
+
+  elLancs.innerHTML = '<div class="loading"><div class="sp"></div> Carregando...</div>';
   try {
     fluxo = await loadFluxo(ano || null, mes || null);
-    addLog('Fluxo: ' + fluxo.length + ' registros carregados');
+    addLog('Fluxo: ' + fluxo.length + ' registros — ' + (ano||'todos') + (mes?'/'+mes:''));
   } catch(e) {
-    document.getElementById('fLancs').innerHTML = `<div style="padding:20px;color:var(--red);font-size:11px;">Erro ao carregar: ${e.message}</div>`;
+    elLancs.innerHTML = `<div style="padding:20px;color:var(--red);font-size:11px;">Erro ao carregar: ${e.message}</div>`;
     addLog('Erro renderFluxo: ' + e.message);
     return;
   }
